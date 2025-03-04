@@ -22,7 +22,12 @@ void DrawBall(float R)
 	glEnd();
 }
 
-GameApp::GameApp() {}
+GameApp::GameApp()
+{
+	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {1,1,0}},{{50, 0, 0}, {1,1,0}} }, LINE_TYPE::Lines, 5)));
+	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {1,1,0}},{{0, 50, 0}, {1,1,0}} }, LINE_TYPE::Lines, 5)));
+	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {1,1,0}},{{0, 0, 50}, {1,1,0}} }, LINE_TYPE::Lines, 5)));
+}
 
 void GameApp::OnResize() {}
 
@@ -33,5 +38,9 @@ void GameApp::OnRender()
 	glPushMatrix();
 	glTranslatef(0, 0, -20);
 	DrawBall(10);
+	for (auto o : objs)
+	{
+		o->Draw();
+	}
 	glPopMatrix();
 }

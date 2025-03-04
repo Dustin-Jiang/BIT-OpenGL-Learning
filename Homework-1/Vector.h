@@ -29,15 +29,14 @@ public:
 
 using Vector2f = Vector2<float>;
 
-//template<class T = float>
-//class Vector3 : VectorBase<T>
-//{
-//public:
-//	static const int dimension = 3;
-//	Vector3();
-//	Vector3(T x, T y, T z);
-//	~Vector3();
-//	T x, y, z;
-//};
-//
-//using Vector3f = Vector3<float>;
+template<class T = float>
+class Vector3 : VectorBase<T>
+{
+public:
+	static const int dimension = 3;
+	Vector3() : x(0), y(0), z(0) {};
+	Vector3(T x, T y, T z): x(x), y(y), z(z) {};
+	T x, y, z;
+};
+
+using Vector3f = Vector3<float>;
