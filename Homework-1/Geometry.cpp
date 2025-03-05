@@ -21,8 +21,8 @@ void Line::OnDraw()
 	glBegin(type);
 	for (auto& v : vertices)
 	{
-		glColor3f(v.color.x, v.color.y, v.color.z);
-		glVertex3f(v.x, v.y, v.z);
+		glColor3f(v.color.x(), v.color.y(), v.color.z());
+		glVertex3f(v.x(), v.y(), v.z());
 	}
 	glEnd();
 }

@@ -1,3 +1,4 @@
+#pragma execution_character_set("uft-8")
 #pragma once
 #include "stdafx.h"
 #include "GLApp.h"
@@ -12,9 +13,9 @@ void GLApp::Init(
 	Vector2f screenSize = {1024, 768},
 	Vector2f screenPos = {100, 100})
 {
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-	glutInitWindowPosition(screenPos.x, screenPos.y);
-	glutInitWindowSize(screenSize.x, screenSize.y);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	glutInitWindowPosition(screenPos.x(), screenPos.y());
+	glutInitWindowSize(screenSize.x(), screenSize.y());
 
 	this->screenSize = screenSize;
 	this->screenPos = screenPos;
@@ -40,7 +41,7 @@ void GLApp::OnUpdate(int val)
 
 void GLApp::OnRender()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	app.OnRender();
 	glutSwapBuffers();
 }
@@ -53,7 +54,7 @@ void GLApp::Run()
 
 void GLApp::OnResize(Vector2f screenSize)
 {
-	OnResize(screenSize.x, screenSize.y);
+	OnResize(screenSize.x(), screenSize.y());
 }
 
 void GLApp::OnResize(int w, int h)

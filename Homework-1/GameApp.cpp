@@ -22,8 +22,9 @@ void DrawBall(float R)
 	glEnd();
 }
 
-GameApp::GameApp()
+GameApp::GameApp(): objs{}, pCamera(std::make_shared<Camera>())
 {
+	glEnable(GL_DEPTH_TEST);
 	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {1,1,0}},{{50, 0, 0}, {1,1,0}} }, LINE_TYPE::Lines, 5)));
 	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {1,1,0}},{{0, 50, 0}, {1,1,0}} }, LINE_TYPE::Lines, 5)));
 	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {1,1,0}},{{0, 0, 50}, {1,1,0}} }, LINE_TYPE::Lines, 5)));
@@ -31,12 +32,17 @@ GameApp::GameApp()
 
 void GameApp::OnResize() {}
 
-void GameApp::OnUpdate(int val) {}
+void GameApp::OnUpdate(int val)
+{
+	gluLookAt(pCamera->Position.x(), pCamera->Position.y(), pCamera->Position.z(),
+		pCamera->Front.x(), pCamera->Front.y(), pCamera->Front.z(),
+		pCamera->Up.x(), pCamera->Up.y(), pCamera->Up.z());
+}
 
 void GameApp::OnRender()
 {
 	glPushMatrix();
-	glTranslatef(0, 0, -20);
+	glTranslatef(-10, -5, -40);
 	DrawBall(10);
 	for (auto o : objs)
 	{

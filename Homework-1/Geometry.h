@@ -12,6 +12,7 @@ public:
 	void Draw()
 	{
 		OnDraw();
+		glColor3f(1, 1, 1);
 	};
 protected:
 	virtual void OnDraw() = 0;

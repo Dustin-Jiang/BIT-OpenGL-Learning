@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Geometry.h"
+#include "Camera.h"
 
 #include <memory>
 #include <vector>
@@ -15,4 +16,5 @@ public:
 
 private:
 	std::vector<pDrawable> objs;
+	std::shared_ptr<Camera> pCamera;
 };
