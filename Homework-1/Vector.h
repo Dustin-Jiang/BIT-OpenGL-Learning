@@ -4,6 +4,9 @@
 #include <cmath>
 #include <stdexcept>
 #include <cstddef>
+#include <iostream>
+
+//#include "Matrix.h"
 
 template<typename T = float, std::size_t N = 2>
 class Vector {
@@ -35,6 +38,14 @@ public:
         }
         return result;
     }
+
+	Vector<T, N> operator-(void) const {
+		Vector<T, N> result;
+		for (std::size_t i = 0; i < N; i++) {
+			result.data[i] = -data[i];
+		}
+		return result;
+	}
 
     Vector<T, N> operator*(T scalar) const {
         Vector<T, N> result;
@@ -110,6 +121,18 @@ public:
     operator const T* () const {
         return data.data();
     }
+
+    // 输出支持
+	friend std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v) {
+		os << "(";
+		for (std::size_t i = 0; i < N; i++) {
+			os << v.data[i];
+			if (i < N - 1)
+				os << ", ";
+		}
+		os << ")";
+		return os;
+	}
 };
 
 template<typename T = float>
@@ -135,6 +158,7 @@ public:
     Vector3() : Vector<T, 3>() {}
 
     Vector3(T x, T y, T z) : Vector<T, 3>(x, y, z) {}
+    Vector3(const Vector<T, 3>& v) : Vector<T, 3>(v) {}
 
     Vector3<T> operator=(const Vector<T, 3> &v)
     {

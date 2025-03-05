@@ -20,6 +20,8 @@ public:
 	void OnRender();
 	void OnResize(Vector2f screenSize);
 	void OnResize(int w, int h);
+	void OnKeyDown(unsigned char key, int x, int y);
+	void OnMouseMove(int x, int y);
 private:
 	GLApp(int argc, char* argv[]);
 	GLApp(const GLApp&) = delete;
@@ -29,8 +31,11 @@ private:
 	std::string title;
 
 	GameApp app;
+	const int interval = 1;
 
 	static void RenderWrapper();
 	static void OnResizeWrapper(int w, int h);
 	static void OnUpdateWrapper(int val);
+	static void OnKeyDownWrapper(unsigned char key, int x, int y);
+	static void OnMouseMoveWrapper(int x, int y);
 };

@@ -30,13 +30,16 @@ void GLApp::Init(
 
 	glutDisplayFunc(GLApp::RenderWrapper);
 	glutReshapeFunc(GLApp::OnResizeWrapper);
+	glutKeyboardFunc(GLApp::OnKeyDownWrapper);
+	glutPassiveMotionFunc(GLApp::OnMouseMoveWrapper);
 }
 
 void GLApp::OnUpdate(int val)
 {
-	app.OnRender();
+	glLoadIdentity();
+	app.OnUpdate(val);
 	OnRender();
-	glutTimerFunc(1, GLApp::OnUpdateWrapper, 0);
+	glutTimerFunc(interval, GLApp::OnUpdateWrapper, interval);
 }
 
 void GLApp::OnRender()
@@ -70,6 +73,16 @@ void GLApp::OnResize(int w, int h)
 	app.OnResize();
 }
 
+void GLApp::OnKeyDown(unsigned char key, int x, int y)
+{
+	app.OnKey(key, x, y);
+}
+
+void GLApp::OnMouseMove(int x, int y)
+{
+	app.OnMouseMove(x, y);
+}
+
 // Static function to call the member function
 void GLApp::RenderWrapper()
 {
@@ -95,5 +108,23 @@ void GLApp::OnUpdateWrapper(int val)
 	if (app)
 	{
 		app->OnUpdate(val);
+	}
+}
+
+void GLApp::OnKeyDownWrapper(unsigned char key, int x, int y)
+{
+	GLApp* app = static_cast<GLApp*>(GetInstance());
+	if (app)
+	{
+		app->OnKeyDown(key, x, y);
+	}
+}
+
+void GLApp::OnMouseMoveWrapper(int x, int y)
+{
+	GLApp* app = static_cast<GLApp*>(GetInstance());
+	if (app)
+	{
+		app->OnMouseMove(x, y);
 	}
 }
