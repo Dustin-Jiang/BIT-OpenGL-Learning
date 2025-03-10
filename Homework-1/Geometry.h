@@ -2,23 +2,12 @@
 #include "stdafx.h"
 #include "Vector.h"
 #include "glut.h"
+#include "Drawable.h"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-class Drawable
-{
-public:
-	void Draw()
-	{
-		OnDraw();
-		glColor3f(1, 1, 1);
-	};
-protected:
-	virtual void OnDraw() = 0;
-};
-
-using pDrawable = std::shared_ptr<Drawable>;
+const double PI = asin(1) * 2;
 
 enum LINE_TYPE
 {
@@ -34,12 +23,17 @@ public:
 	Vector3f color;
 	Vertex3f(float x, float y, float z, Vector3f color) : Vector3f(x, y, z), color(color) {};
 	Vertex3f(Vector3f v, Vector3f color) : Vector3f(v), color(color) {};
+
+	void SetColor(Vector3f color)
+	{
+		this->color = color;
+	}
 };
 
 class Line : public Drawable
 {
 public:
-	const std::vector<Vertex3f> vertices;
+	std::vector<Vertex3f> vertices;
 	LINE_TYPE type;
 	float width;
 
@@ -47,5 +41,14 @@ public:
 	Line(std::vector<Vertex3f> vertices, LINE_TYPE type, float width);
 
 	void SetWidth(float w);
+	void OnDraw() override;
+};
+
+class Point : public Drawable
+{
+public:
+	Vertex3f vertex;
+	float size;
+	Point(Vertex3f vertex, float size) : vertex(vertex), size(size) {};
 	void OnDraw() override;
 };

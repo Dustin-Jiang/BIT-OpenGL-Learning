@@ -26,3 +26,14 @@ void Line::OnDraw()
 	}
 	glEnd();
 }
+
+void Point::OnDraw()
+{
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glPointSize(size);
+	glBegin(GL_POINTS);
+	glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+	glVertex3f(vertex.x(), vertex.y(), vertex.z());
+	glEnd();
+}

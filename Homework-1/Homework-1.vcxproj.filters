@@ -45,6 +45,12 @@
     <ClInclude Include="Matrix.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Drawable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Star.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

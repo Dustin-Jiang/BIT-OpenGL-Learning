@@ -36,7 +36,7 @@ public:
 
 	void Pitch(float rad)
 	{
-		if (abs(pitch + rad) > std::asin(0.5))
+		if (abs(pitch + rad) > std::asin(0.95))
 			return;
 		Front = (Front * cos(rad) + Up * sin(rad)).Normalized();
 		Up = Right.Cross(Front).Normalized();

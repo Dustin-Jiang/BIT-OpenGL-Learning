@@ -4,6 +4,8 @@
 #include "Camera.h"
 #include "Mouse.h"
 
+#include "Star.h"
+
 #include <memory>
 #include <vector>
 
