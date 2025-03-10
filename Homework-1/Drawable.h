@@ -11,8 +11,9 @@ class Drawable
 public:
 	virtual void Draw()
 	{
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		OnDraw();
-		glColor3f(1, 1, 1);
+		glPopAttrib();
 	};
 	void Update(int val)
 	{

@@ -24,4 +24,5 @@ private:
 	std::vector<pDrawable> objs;
 	std::shared_ptr<Camera> pCamera;
 	std::shared_ptr<Mouse> pMouse;
+	std::shared_ptr<MovingSphere> pMovingSphere;
 };

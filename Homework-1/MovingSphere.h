@@ -37,4 +37,9 @@ public:
 
 		SetVelocity(Vector3f{ dis(gen), dis(gen), dis(gen) }.Normalized() * 0.25);
 	}
+
+	void ResetPosition()
+	{
+		vertex.data = {0, 0, 0};
+	};
 };

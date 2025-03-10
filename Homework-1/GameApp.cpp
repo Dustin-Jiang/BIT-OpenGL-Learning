@@ -16,7 +16,9 @@ pMouse(Mouse::GetInstance())
 	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {0,0,1}},{{0, 0, 50}, {0,0,1}} }, LINE_TYPE::Lines, 5)));
 
 	objs.push_back(std::make_shared<Stars>(10000));
-	objs.push_back(std::make_shared<MovingSphere>(MovingSphere({ {0, 0, 0}, {1, 0, 0} }, 1, 16, 16)));
+
+	pMovingSphere = std::make_shared<MovingSphere>(Vertex3f{ {0, 0, 0}, {1, 0, 0} }, 1.0f, 20, 20);
+	objs.push_back(pMovingSphere);
 }
 
 void GameApp::OnResize() {}
@@ -36,6 +38,10 @@ void GameApp::OnKey(unsigned char key, int x, int y)
 		break;
 	case 'd':
 		pCamera->Move(pCamera->Right * 0.033 * 5);
+		break;
+	case ' ':
+		pMovingSphere->ResetVelocity();
+		pMovingSphere->ResetPosition();
 		break;
 	default:
 		break;
