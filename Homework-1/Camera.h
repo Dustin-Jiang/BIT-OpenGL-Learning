@@ -7,6 +7,8 @@
 #include <cmath>
 #include <cassert>
 
+const auto worldUp = Vector3f{ 0, 1, 0 };
+
 class Camera
 {
 	float pitch = 0.0f;
@@ -26,9 +28,7 @@ public:
 
 	void Yaw(float rad)
 	{
-		auto worldUp = Vector3f{ 0, 1, 0 };
 		auto rot = Matrix3f(cos(rad), 0.f, sin(rad), 0.f, 1.f, 0.f, -sin(rad), 0.f, cos(rad));
-		
 		Front = (rot * Matrix3f::VMatrix(Front)).ToVector().Normalized();
 		Right = (rot * Matrix3f::VMatrix(Right)).ToVector().Normalized();
 		Up = (rot * Matrix3f::VMatrix(Up)).ToVector().Normalized();
@@ -46,5 +46,17 @@ public:
 	Vector3f Center()
 	{
 		return Position + Front;
+	}
+
+	void SetPosition(Vector3f pos)
+	{
+		Position = pos;
+	}
+
+	void SetLookAt(Vector3f lookat)
+	{
+		Front = (lookat - Position).Normalized();
+		Right = Front.Cross(worldUp).Normalized();
+		Up = Right.Cross(Front);
 	}
 };

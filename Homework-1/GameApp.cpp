@@ -4,15 +4,19 @@
 #include "GameApp.h"
 #include <iostream>
 
-GameApp::GameApp(): objs{}, pCamera(std::make_shared<Camera>()),
-	pMouse(Mouse::GetInstance())
+GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()),
+pMouse(Mouse::GetInstance())
 {
+	pCamera->Move({ 40, 10, 30 });
+	pCamera->SetLookAt({ 0, 0, 0 });
+
 	glEnable(GL_DEPTH_TEST);
 	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {1,0,0}},{{50, 0, 0}, {1,0,0}} }, LINE_TYPE::Lines, 5)));
 	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {0,1,0}},{{0, 50, 0}, {0,1,0}} }, LINE_TYPE::Lines, 5)));
 	objs.push_back(std::make_shared<Line>(Line({ {{0,0,0}, {0,0,1}},{{0, 0, 50}, {0,0,1}} }, LINE_TYPE::Lines, 5)));
 
 	objs.push_back(std::make_shared<Stars>(10000));
+	objs.push_back(std::make_shared<MovingSphere>(MovingSphere({ {0, 0, 0}, {1, 0, 0} }, 1, 16, 16)));
 }
 
 void GameApp::OnResize() {}
@@ -52,7 +56,7 @@ void GameApp::OnUpdate(int val)
 	gluLookAt(pCamera->Position.x(), pCamera->Position.y(), pCamera->Position.z(),
 		pCamera->Center().x(), pCamera->Center().y(), pCamera->Center().z(),
 		pCamera->Up.x(), pCamera->Up.y(), pCamera->Up.z());
-	
+
 	for (auto o : objs)
 	{
 		o->Update(val);

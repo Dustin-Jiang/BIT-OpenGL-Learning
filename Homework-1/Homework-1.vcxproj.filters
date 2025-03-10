@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="场景对象">
+      <UniqueIdentifier>{a9fd492c-d27b-4541-ab23-324fe204243b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -48,8 +51,8 @@
     <ClInclude Include="Drawable.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Star.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="Stars.h">
+      <Filter>场景对象</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +70,9 @@
     </ClCompile>
     <ClCompile Include="Geometry.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MovingSphere.h">
+      <Filter>场景对象</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

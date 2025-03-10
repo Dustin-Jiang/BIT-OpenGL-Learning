@@ -52,3 +52,14 @@ public:
 	Point(Vertex3f vertex, float size) : vertex(vertex), size(size) {};
 	void OnDraw() override;
 };
+
+class Sphere : public Drawable
+{
+public:
+	float radius;
+	unsigned int slices, stacks;
+	Vertex3f vertex;
+	std::vector<std::vector<Vector3f>> vertices;
+	Sphere(Vertex3f vertex, float radius, unsigned int slices, unsigned int stacks);
+	void OnDraw() override;
+};
