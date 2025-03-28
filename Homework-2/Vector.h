@@ -140,13 +140,11 @@ public:
 
 	// 输出支持
 	friend std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v) {
-		os << "(";
 		for (std::size_t i = 0; i < N; i++) {
 			os << v.data[i];
 			if (i < N - 1)
-				os << ", ";
+				os << ",";
 		}
-		os << ")";
 		return os;
 	}
 };
