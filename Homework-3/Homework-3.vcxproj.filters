@@ -51,6 +51,12 @@
     <ClInclude Include="Stars.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Planet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

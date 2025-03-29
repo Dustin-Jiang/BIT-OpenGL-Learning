@@ -2,6 +2,7 @@
 #pragma once
 #include "stdafx.h"
 #include "GLApp.h"
+#include "Keyboard.h"
 
 GLApp::GLApp(int argc, char* argv[]): app()
 {
@@ -31,6 +32,7 @@ void GLApp::Init(
 	glutDisplayFunc(GLApp::RenderWrapper);
 	glutReshapeFunc(GLApp::OnResizeWrapper);
 	glutKeyboardFunc(GLApp::OnKeyDownWrapper);
+	glutSpecialFunc(GLApp::OnSpecialDownWrapper);
 	glutPassiveMotionFunc(GLApp::OnMouseMoveWrapper);
 }
 
@@ -73,7 +75,7 @@ void GLApp::OnResize(int w, int h)
 	app.OnResize();
 }
 
-void GLApp::OnKeyDown(unsigned char key, int x, int y)
+void GLApp::OnKeyDown(int key, int x, int y)
 {
 	app.OnKey(key, x, y);
 }
@@ -116,8 +118,17 @@ void GLApp::OnKeyDownWrapper(unsigned char key, int x, int y)
 	GLApp* app = static_cast<GLApp*>(GetInstance());
 	if (app)
 	{
-		app->OnKeyDown(key, x, y);
+		app->OnKeyDown(KeyCode(key), x, y);
 	}
+}
+
+void GLApp::OnSpecialDownWrapper(int key, int x, int y)
+{
+  GLApp* app = static_cast<GLApp*>(GetInstance());
+  if (app)
+  {
+	app->OnKeyDown(KeyCode(key), x, y);
+  }
 }
 
 void GLApp::OnMouseMoveWrapper(int x, int y)

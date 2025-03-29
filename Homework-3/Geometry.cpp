@@ -65,7 +65,7 @@ void Sphere::OnDraw()
 	glPushMatrix();
 	glTranslatef(vertex.x(), vertex.y(), vertex.z());
 	
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
 	glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
 	glLineWidth(1.0f);
 
@@ -171,4 +171,20 @@ void Arrow::SetDirection(Vector3f dir)
 	Vector3f worldUp = { 0, 1, 0 };
 	rotationAxis = worldUp.Cross(dir).Normalized();
 	rotationDegree = acos(worldUp.Dot(dir.Normalized())) * 180 / PI;
+}
+
+Matrix4f RotationMatrix(Vector3f axis, float deg)
+{
+  float rad = deg * PI / 180;
+  Vector3f v = axis.Normalized();
+  VVector3f u{ v.x(), v.y(), v.z() };
+  Matrix3f ux{ 0 , -v.z(), v.y(), v.z(), 0, -v.x(), -v.y(), -v.x(), 0 };
+  Matrix3f i{ 1,0,0,0,1,0,0,0,1 };
+  auto result3f = i * cos(rad) + ux * sin(rad) + (u * u.Transpose()) * (1 - cos(rad));
+  Matrix4f result{
+	result3f(0,0), result3f(1,0), result3f(2,0), 0,
+	result3f(0,1), result3f(1,1), result3f(2,1), 0,
+	result3f(0,2), result3f(1,2), result3f(2,2), 0,
+    0, 0, 0, 1 };
+  return result;
 }

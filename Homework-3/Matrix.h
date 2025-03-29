@@ -42,6 +42,16 @@ public:
 	const _T& operator()(std::size_t i, std::size_t j) const {
 		return data[i * W + j];
 	}
+
+	std::array<_T, W * H > getGlMatrix() const {
+	  std::array<_T, W * H> gl_data;
+	  for (size_t col = 0; col < W; ++col) {
+		for (size_t row = 0; row < H; ++row) {
+		  gl_data[col * W + row] = (*this)(row, col);
+		}
+	  }
+	  return gl_data;
+	}
 	
 	Matrix<_T, W, H> operator+(const Matrix<_T, W, H>& other) const {
 		Matrix<_T, W, H> result;
@@ -68,8 +78,6 @@ public:
 	}
 
 	Matrix<_T, W, H> operator/(_T scalar) const {
-		if (scalar == _T(0))
-			throw std::runtime_error("Division by zero");
 		Matrix<_T, W, H> result;
 		for (std::size_t i = 0; i < W * H; i++) {
 			result.data[i] = data[i] / scalar;
@@ -169,6 +177,16 @@ public:
 			result[i] = data[i];
 		}
 		return result;
+	}
+
+	static Matrix<_T, W, H> Identity() {
+	  static_assert(W == H, "Identity Matrix must be square");
+
+	  Matrix<_T, W, H> identity;
+	  for (std::size_t i = 0; i < W; ++i) {
+		identity(i, i) = static_cast<_T>(1);
+	  }
+	  return identity;
 	}
 };
 

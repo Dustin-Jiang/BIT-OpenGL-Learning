@@ -5,6 +5,7 @@
 #include "Mouse.h"
 
 #include "Stars.h"
+#include "Planet.h"
 #include "MovingSphere.h"
 
 #include <memory>
@@ -17,7 +18,7 @@ public:
 	void OnResize();
 	void OnUpdate(int val);
 	void OnRender();
-	void OnKey(unsigned char key, int x, int y);
+	void OnKey(int key, int x, int y);
 	void OnMouseMove(int x, int y);
 
 private:
@@ -25,4 +26,5 @@ private:
 	std::shared_ptr<Camera> pCamera;
 	std::shared_ptr<Mouse> pMouse;
 	std::shared_ptr<MovingSphere> pMovingSphere;
+	std::vector<std::shared_ptr<Planet>> planets;
 };

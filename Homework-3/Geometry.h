@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+#include "Matrix.h"
 
 const double PI = asin(1) * 2;
 
@@ -63,6 +64,7 @@ public:
 	float radius;
 	unsigned int slices, stacks;
 	Vertex3f vertex;
+    bool isWire = false;
 	std::vector<std::vector<Vector3f>> vertices;
 	Sphere(Vertex3f vertex, float radius, unsigned int slices, unsigned int stacks);
 	void OnDraw() override;
@@ -97,3 +99,5 @@ public:
 	void SetPosition(Vector3f pos);
 	void SetDirection(Vector3f dir);
 };
+
+Matrix4f RotationMatrix(Vector3f axis, float deg);

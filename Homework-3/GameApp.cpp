@@ -10,6 +10,7 @@
 #include <locale>
 #include <codecvt>
 #include <windows.h>
+#include "Keyboard.h"
 
 std::string GBKToUTF8(const std::string& gbkStr) {
 	int len = MultiByteToWideChar(CP_ACP, 0, gbkStr.c_str(), -1, NULL, 0);
@@ -145,17 +146,8 @@ void CalculateMatrix() {
         out << "数据格式错误" << std::endl;
       }
       else {
-        float rad = deg * PI / 180;
-        Vector3f v1{ x1, y1, z1 }, v = v1.Normalized();
-        VVector3f u { v.x(), v.y(), v.z() };
-        Matrix3f ux{ 0 , -v.z(), v.y(), v.z(), 0, -v.x(), -v.y(), -v.x(), 0};
-        Matrix3f i{ 1,0,0,0,1,0,0,0,1 };
-        auto result3f = i * cos(rad) + ux * sin(rad) + (u * u.Transpose()) * (1 - cos(rad));
-        Matrix4f result{
-          result3f(0,0), result3f(1,0), result3f(2,0), 0,
-          result3f(0,1), result3f(1,1), result3f(2,1), 0,
-          result3f(0,2), result3f(1,2), result3f(2,2), 0,
-          0, 0, 0, 1 };
+        Vector3f v1{ x1, y1, z1 };
+        auto result = RotationMatrix(v1, deg);
         out << deg << "\t" << v1 << "\t" << result << std::endl;
       }
       processed = true;
@@ -226,11 +218,11 @@ void CalculateMatrix() {
   out.close();
 }
 
-GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()),
+GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()), planets{}, 
 pMouse(Mouse::GetInstance())
 {
 	CalculateMatrix();
-	pCamera->Move({ 40, 10, 30 });
+	pCamera->Move({ 40, 40, 40 });
 	pCamera->SetLookAt({ 0, 0, 0 });
 
 	glEnable(GL_DEPTH_TEST);
@@ -240,17 +232,24 @@ pMouse(Mouse::GetInstance())
 
 	objs.push_back(std::make_shared<Stars>(100));
 
-	pMovingSphere = std::make_shared<MovingSphere>(Vertex3f{ {0, 0, 0}, {1, 0, 0} }, 1.0f, 20, 20);
-	objs.push_back(pMovingSphere);
+    pMovingSphere = std::make_shared<MovingSphere>(Vertex3f{ {0, 0, 0}, {1, 0, 0} }, 1.0f, 20, 20);
+    objs.push_back(pMovingSphere);
+
+	planets.push_back(std::make_shared<Sun>(Sun({ 0,0,0 })));
+
+    for (auto &p : planets)
+    {
+      objs.push_back(p);
+    }
 }
 
 void GameApp::OnResize() {}
 
-void GameApp::OnKey(unsigned char key, int x, int y)
+void GameApp::OnKey(int key, int x, int y)
 {
 	switch (key)
 	{
-	case 'w':
+	/*case 'w':
 		pCamera->Move(pCamera->Front * 0.033 * 5);
 		break;
 	case 's':
@@ -261,32 +260,38 @@ void GameApp::OnKey(unsigned char key, int x, int y)
 		break;
 	case 'd':
 		pCamera->Move(pCamera->Right * 0.033 * 5);
-		break;
-	case 'i':
+		break;*/
+    case KeyCode(GLUT_KEY_F1):
+        for (auto &p : planets)
+        {
+            p->isWire = !p->isWire;
+        }
+        break;
+	case KeyCode('i'):
 		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{0, 0.05, 0}; });
 		break;
-	case 'k':
+	case KeyCode('k'):
 		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0, -0.05, 0 }; });
 		break;
-	case 'j':
+	case KeyCode('j'):
 		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ -0.05, 0, 0 }; });
 		break;
-	case 'l':
+    case KeyCode('l'):
 		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0.05, 0, 0 }; });
 		break;
-	case 'u':
+    case KeyCode('u'):
 		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0, 0, 0.05 }; });
 		break;
-	case 'o':
+    case KeyCode('o'):
 		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0, 0, -0.05 }; });
 		break;
-	case 'y':
+    case KeyCode('y'):
 		pMovingSphere->CalcVelocity([](Vector3f v) { return v * 1.2; });
 		break;
-	case 'h':
+    case KeyCode('h'):
 		pMovingSphere->CalcVelocity([](Vector3f v) { return v * 0.8; });
 		break;
-	case ' ':
+    case KeyCode(' '):
 		pMovingSphere->ResetVelocity();
 		pMovingSphere->ResetPosition();
 		break;
@@ -298,10 +303,10 @@ void GameApp::OnKey(unsigned char key, int x, int y)
 void GameApp::OnMouseMove(int x, int y)
 {
 	pMouse->Update(x, y);
-	auto yaw = -1.0f * 0.033 * pMouse->deltaX;
+	/*auto yaw = -1.0f * 0.033 * pMouse->deltaX;
 	auto pitch = -1.0f * 0.033 * pMouse->deltaY;
 	pCamera->Yaw(yaw);
-	pCamera->Pitch(pitch);
+	pCamera->Pitch(pitch);*/
 }
 
 void GameApp::OnUpdate(int val)

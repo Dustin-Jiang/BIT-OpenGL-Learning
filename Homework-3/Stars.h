@@ -11,9 +11,12 @@ class Stars : public Drawable
 {
 	std::vector<std::pair<std::shared_ptr<Point>, double>> points;
 	std::vector<pDrawable> objs;
+
+	Matrix4f rotation, delta;
 	float angle = 0;
 public:
-	Stars(size_t size) : points(), objs()
+	Stars(size_t size) : points(), objs(), rotation(Matrix4f::Identity()),
+	  delta(RotationMatrix({ 0, 1, 0 }, 0.5 / 30.0))
 	{
 		std::random_device rd;
 		std::mt19937 gen(rd());
@@ -49,12 +52,12 @@ public:
 			o->Update(val);
 		}
 
-		angle += 1.0f / 30.0f * val * 0.25;
+        rotation = rotation * delta;
 	}
 
 	void OnDraw() override
 	{
-		glRotatef(angle, 0, 1, 0);
+		glMultMatrixf(rotation.getGlMatrix().data());
 		for (auto& obj : objs)
 		{
 			obj->Draw();
