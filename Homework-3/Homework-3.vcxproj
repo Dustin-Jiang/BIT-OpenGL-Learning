@@ -163,6 +163,7 @@
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CalculateMatrix.cpp" />
     <ClCompile Include="GameApp.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GLApp.cpp" />

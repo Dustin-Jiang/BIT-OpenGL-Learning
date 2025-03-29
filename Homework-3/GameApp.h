@@ -8,6 +8,16 @@
 #include "Planet.h"
 #include "MovingSphere.h"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <locale>
+#include <codecvt>
+#include <windows.h>
+
+#include "Matrix.h"
+
 #include <memory>
 #include <vector>
 
@@ -28,3 +38,5 @@ private:
 	std::shared_ptr<MovingSphere> pMovingSphere;
 	std::vector<std::shared_ptr<Planet>> planets;
 };
+
+void CalculateMatrix(void);
