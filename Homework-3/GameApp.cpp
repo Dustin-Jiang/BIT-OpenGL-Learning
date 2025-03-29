@@ -222,13 +222,13 @@ GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()), planets{},
 pMouse(Mouse::GetInstance())
 {
 	CalculateMatrix();
-	pCamera->Move({ 40, 40, 40 });
+	pCamera->Move({ 80, 40, 80 });
 	pCamera->SetLookAt({ 0, 0, 0 });
 
 	glEnable(GL_DEPTH_TEST);
-	objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {1,0,0}},{{50, 0, 0}, {1,0,0}} })));
+	/*objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {1,0,0}},{{50, 0, 0}, {1,0,0}} })));
 	objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {0,1,0}},{{0, 50, 0}, {0,1,0}} })));
-	objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {0,0,1}},{{0, 0, 50}, {0,0,1}} })));
+	objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {0,0,1}},{{0, 0, 50}, {0,0,1}} })));*/
 
 	objs.push_back(std::make_shared<Stars>(100));
 
@@ -236,6 +236,12 @@ pMouse(Mouse::GetInstance())
     objs.push_back(pMovingSphere);
 
 	planets.push_back(std::make_shared<Sun>(Sun({ 0,0,0 })));
+    planets.push_back(std::make_shared<Mercury>(Mercury({ 25,0,0 })));
+    planets.push_back(std::make_shared<Venus>(Venus({ 30,0,0 })));
+    planets.push_back(std::make_shared<Earth>(Earth({ 35,0,0 })));
+    planets.push_back(std::make_shared<Mars>(Mars({ -40,0,0 })));
+    planets.push_back(std::make_shared<Jupiter>(Jupiter({ 55,0,0 })));
+    planets.push_back(std::make_shared<Saturn>(Saturn({ -75,0,0 })));
 
     for (auto &p : planets)
     {
@@ -249,18 +255,18 @@ void GameApp::OnKey(int key, int x, int y)
 {
 	switch (key)
 	{
-	/*case 'w':
+	case KeyCode('w'):
 		pCamera->Move(pCamera->Front * 0.033 * 5);
 		break;
-	case 's':
+	case KeyCode('s'):
 		pCamera->Move(-pCamera->Front * 0.033 * 5);
 		break;
-	case 'a':
+	case KeyCode('a'):
 		pCamera->Move(-pCamera->Right * 0.033 * 5);
 		break;
-	case 'd':
+	case KeyCode('d'):
 		pCamera->Move(pCamera->Right * 0.033 * 5);
-		break;*/
+		break;
     case KeyCode(GLUT_KEY_F1):
         for (auto &p : planets)
         {
@@ -303,10 +309,6 @@ void GameApp::OnKey(int key, int x, int y)
 void GameApp::OnMouseMove(int x, int y)
 {
 	pMouse->Update(x, y);
-	/*auto yaw = -1.0f * 0.033 * pMouse->deltaX;
-	auto pitch = -1.0f * 0.033 * pMouse->deltaY;
-	pCamera->Yaw(yaw);
-	pCamera->Pitch(pitch);*/
 }
 
 void GameApp::OnUpdate(int val)
