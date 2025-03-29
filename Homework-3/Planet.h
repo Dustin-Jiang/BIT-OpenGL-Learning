@@ -83,11 +83,23 @@ public:
 class Jupiter : public Planet
 {
 public:
-  Jupiter(Vector3f pos) : Planet(pos, { 181.f / 256, 162.f / 256, 119.f / 256 }, 11.0f, 0.5f, 0.05f) {};
+  Jupiter(Vector3f pos) : Planet(pos, { 181.f / 256, 162.f / 256, 119.f / 256 }, 8.0f, 0.5f, 0.05f) {};
 };
 
 class Saturn : public Planet
 {
 public:
-  Saturn(Vector3f pos) : Planet(pos, { 213.f / 256, 181.f / 256, 122.f / 256 }, 10.0f, 0.5f, 0.03f) {};
+  Saturn(Vector3f pos) : Planet(pos, { 213.f / 256, 181.f / 256, 122.f / 256 }, 7.0f, 0.5f, 0.03f) {};
+};
+
+class Uranus : public Planet
+{
+public:
+  Uranus(Vector3f pos) : Planet(pos, { 0.5, 0.5, 1 }, 3.0f, 0.5f, 0.02f) {};
+};
+
+class Neptune : public Planet
+{
+public:
+  Neptune(Vector3f pos) : Planet(pos, { 0, 0, 1 }, 3.0f, 0.5f, 0.01f) {};
 };

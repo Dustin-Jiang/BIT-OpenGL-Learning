@@ -24,7 +24,7 @@ public:
 		for (int i = 0; i < size; i++)
 		{
 			Vector3f pos = { dis(gen), dis(gen), dis(gen) };
-			pos = pos.Normalized() * 100;
+			pos = pos.Normalized() * 200;
 			
 			auto point = std::make_shared<Point>(Vertex3f(pos, { 1, 1, 1 }), 2.0f);
 			points.emplace_back(
