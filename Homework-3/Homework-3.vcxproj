@@ -157,6 +157,11 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Planet.h" />
+    <ClInclude Include="Spaceship.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </DeploymentContent>
+    </ClInclude>
     <ClInclude Include="Stars.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -169,6 +174,7 @@
     <ClCompile Include="GLApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MovingSphere.h" />
+    <ClCompile Include="Spaceship.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

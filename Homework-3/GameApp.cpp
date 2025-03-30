@@ -57,6 +57,9 @@ pMouse(Mouse::GetInstance())
     {
       objs.push_back(p);
     }
+
+	pSpaceship = std::make_shared<Spaceship>(Spaceship({ 40,0,20 }));
+    objs.push_back(pSpaceship);
 }
 
 void GameApp::OnResize() {}
@@ -67,16 +70,20 @@ void GameApp::OnKey(int key, int x, int y)
 	switch (key)
 	{
 	case KeyCode('w'):
-		pCamera->Move(pCamera->Front * 0.033 * 5);
+		//pCamera->Move(pCamera->Front * 0.033 * 5);
+        pSpaceship->speed = std::min(pSpaceship->speed * 1.25, 1.0);
 		break;
 	case KeyCode('s'):
-		pCamera->Move(-pCamera->Front * 0.033 * 5);
+		//pCamera->Move(-pCamera->Front * 0.033 * 5);
+		pSpaceship->speed = std::max(pSpaceship->speed * 0.8, 0.125);
 		break;
 	case KeyCode('a'):
-		pCamera->Move(-pCamera->Right * 0.033 * 5);
+		//pCamera->Move(-pCamera->Right * 0.033 * 5);
+		pSpaceship->Yaw(0.05);
 		break;
 	case KeyCode('d'):
-		pCamera->Move(pCamera->Right * 0.033 * 5);
+		//pCamera->Move(pCamera->Right * 0.033 * 5);
+		pSpaceship->Yaw(-0.05);
 		break;
     case KeyCode(GLUT_KEY_F1):
         for (auto &p : planets)

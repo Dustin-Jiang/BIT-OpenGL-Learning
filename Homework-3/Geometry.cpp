@@ -87,6 +87,70 @@ void Sphere::OnDraw()
     glPopMatrix();
 };
 
+Cube::Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front) : vertex(vertex), size(size),
+    up(up), front(front), right(up.Cross(front)), vertices()
+{
+    float half = size / 2;
+    vertices = {
+        { { half, half, half }, vertex.color },
+        { { half, half, -half }, vertex.color },
+        { { -half, half, -half }, vertex.color },
+        { { -half, half, half }, vertex.color },
+        { { half, -half, half }, vertex.color },
+        { { half, -half, -half }, vertex.color },
+        { { -half, -half, -half }, vertex.color },
+        { { -half, -half, half }, vertex.color }
+    };
+};
+
+void Cube::OnUpdate(int interval)
+{
+    front = front.Normalized();
+    right = up.Cross(front).Normalized();
+    up = front.Cross(right).Normalized();
+    
+    rotation = Matrix4f(right.x(), up.x(), front.x(), 0.0,
+        right.y(), up.y(), front.y(), 0.0,
+        right.z(), up.z(), front.z(), 0.0,
+        0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void Cube::OnDraw()
+{
+    glPushMatrix();
+    glTranslatef(vertex.x(), vertex.y(), vertex.z());
+    glMultMatrixf(rotation.getGlMatrix().data());
+
+    glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
+    glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+    glLineWidth(1.0f);
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
+    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
+    glVertex3f(vertices[3].x(), vertices[3].y(), vertices[3].z());
+    glEnd();
+    glBegin(GL_LINE_LOOP);
+    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
+    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
+    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
+    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
+    glEnd();
+    glBegin(GL_LINES);
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
+    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
+    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
+    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
+    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
+    glVertex3f(vertices[3].x(), vertices[3].y(), vertices[3].z());
+    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
+    glEnd();
+
+    glPopMatrix();
+};
+
 Cylinder::Cylinder(Vertex3f bottom, Vertex3f to, float radius, unsigned int slices) : bottom(bottom),
 to(to), radius(radius), slices(slices), vertices(), top({0, to.pos.Length(), 0}, bottom.color)
 {

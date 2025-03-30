@@ -71,6 +71,20 @@ public:
     void OnDraw() override;
 };
 
+class Cube : public Drawable
+{
+    Matrix4f rotation = Matrix4f::Identity();
+public:
+    std::vector<Vertex3f> vertices;
+    float size;
+    Vertex3f vertex;
+    bool isWire = false;
+    Vector3f up, right, front;
+    Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front);
+    void OnDraw() override;
+    void OnUpdate(int interval);
+};
+
 class Cylinder : public Drawable
 {
 public:

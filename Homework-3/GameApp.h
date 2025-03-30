@@ -6,6 +6,7 @@
 
 #include "Stars.h"
 #include "Planet.h"
+#include "Spaceship.h"
 #include "MovingSphere.h"
 
 #include <iostream>
@@ -36,8 +37,10 @@ private:
 	std::vector<pDrawable> objs;
 	std::shared_ptr<Camera> pCamera;
 	std::shared_ptr<Mouse> pMouse;
-	std::shared_ptr<MovingSphere> pMovingSphere;
 	std::vector<std::shared_ptr<Planet>> planets;
+
+	std::shared_ptr<MovingSphere> pMovingSphere;
+    std::shared_ptr<Spaceship> pSpaceship;
 };
 
 void CalculateMatrix(void);
