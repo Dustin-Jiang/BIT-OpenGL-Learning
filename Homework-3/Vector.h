@@ -197,6 +197,19 @@ public:
 			this->data[0] * other.data[1] - this->data[1] * other.data[0]
 		);
 	}
+
+    float Depth(const Vector3<T>& from, const Vector3<T>& dir) const
+    {
+        Vector3<T> v = (*this) - from;
+        float t = v.Dot(dir);
+        return t;
+    }
+
+	float Distance(const Vector3<T>& from, const Vector3<T>& dir) const
+	{
+		Vector3<T> p = from + dir * Depth(from, dir);
+		return ((*this) - p).Length();
+	}
 };
 
 using Vector2f = Vector2<float>;

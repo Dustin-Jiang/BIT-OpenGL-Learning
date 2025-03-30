@@ -173,6 +173,49 @@ void Arrow::SetDirection(Vector3f dir)
     rotationDegree = acos(worldUp.Dot(dir.Normalized())) * 180 / PI;
 }
 
+Ring::Ring(Vertex3f vertex, Vector3f up, float innerRadius, float outerRadius, unsigned int slices) : pos(vertex.pos),
+color(vertex.color), vertices(), up(up), innerRadius(innerRadius), outerRadius(outerRadius), slices(slices)
+{
+    float theta = 2 * PI / (slices - 1);
+    for (int i = 0; i < slices; i++)
+    {
+        float x = cos(theta * i);
+        float z = sin(theta * i);
+        vertices[0].push_back({x * innerRadius, 0, z * innerRadius});
+        vertices[1].push_back({x * outerRadius, 0, z * outerRadius});
+    }
+}
+
+void Ring::OnDraw()
+{
+    glTranslatef(pos.x(), pos.y(), pos.z());
+    glPushMatrix();
+
+    glMultMatrixf(rotation.getGlMatrix().data());
+    glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
+    glColor3f(color.x(), color.y(), color.z());
+    glLineWidth(1.0f);
+    glBegin(GL_TRIANGLE_STRIP);
+    for (int i = 0; i < slices; i++)
+    {
+        auto v = vertices[0][i];
+        glVertex3f(v.x(), v.y(), v.z());
+        v = vertices[1][i];
+        glVertex3f(v.x(), v.y(), v.z());
+    }
+
+    glEnd();
+    glPopMatrix();
+}
+
+void Ring::OnUpdate(int val)
+{
+    if (up == Vector3f{ 0, 1, 0 }) return;
+    auto axis = Vector3f{ 0, 1, 0 }.Cross(up).Normalized();
+    auto angle = acos(Vector3f{ 0, 1, 0 }.Dot(up)) / acos(-1) * 180;
+    rotation = RotationMatrix(up, angle);
+}
+
 Track::Track(size_t size, float width) : size(size), points({}), width(width)
 {
     points.resize(size, Point { {{0,0,0},{0,0,0}}, width });

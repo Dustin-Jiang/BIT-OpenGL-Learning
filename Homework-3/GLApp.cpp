@@ -23,16 +23,16 @@ void GLApp::Init(
 	this->title = title;
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	//glEnable(GL_LINE_SMOOTH);
-	//glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glutCreateWindow(title.c_str());
 
 	glutDisplayFunc(GLApp::RenderWrapper);
 	glutReshapeFunc(GLApp::OnResizeWrapper);
 	glutKeyboardFunc(GLApp::OnKeyDownWrapper);
+    glutMouseFunc(GLApp::OnMouseWrapper);
 	glutSpecialFunc(GLApp::OnSpecialDownWrapper);
 	glutPassiveMotionFunc(GLApp::OnMouseMoveWrapper);
 }
@@ -84,6 +84,11 @@ void GLApp::OnKeyDown(int key, int x, int y)
 void GLApp::OnMouseMove(int x, int y)
 {
 	app.OnMouseMove(x, y);
+}
+
+void GLApp::OnMouse(int button, int state, int x, int y)
+{
+	app.OnMouse(button, state, x, y);
 }
 
 // Static function to call the member function
@@ -139,4 +144,13 @@ void GLApp::OnMouseMoveWrapper(int x, int y)
 	{
 		app->OnMouseMove(x, y);
 	}
+}
+
+void GLApp::OnMouseWrapper(int button, int state, int x, int y)
+{
+    GLApp* app = static_cast<GLApp*>(GetInstance());
+    if (app)
+    {
+        app->OnMouse(button, state, x, y);
+    }
 }

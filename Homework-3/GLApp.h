@@ -22,6 +22,7 @@ public:
 	void OnResize(int w, int h);
 	void OnKeyDown(int key, int x, int y);
 	void OnMouseMove(int x, int y);
+    void OnMouse(int button, int state, int x, int y);
 private:
 	GLApp(int argc, char* argv[]);
 	GLApp(const GLApp&) = delete;
@@ -39,4 +40,5 @@ private:
 	static void OnKeyDownWrapper(unsigned char key, int x, int y);
 	static void OnSpecialDownWrapper(int key, int x, int y);
 	static void OnMouseMoveWrapper(int x, int y);
+	static void OnMouseWrapper(int button, int state, int x, int y);
 };

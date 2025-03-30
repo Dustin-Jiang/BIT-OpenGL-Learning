@@ -24,7 +24,7 @@ public:
 	void Update(int val)
 	{
 		OnUpdate(val);
-	}
+	};
 protected:
 	virtual void OnDraw() = 0;
 	virtual void OnUpdate(int val) {};

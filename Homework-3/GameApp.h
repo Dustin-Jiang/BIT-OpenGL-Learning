@@ -30,6 +30,7 @@ public:
 	void OnRender();
 	void OnKey(int key, int x, int y);
 	void OnMouseMove(int x, int y);
+    void OnMouse(int button, int state, int x, int y);
 
 private:
 	std::vector<pDrawable> objs;
@@ -40,3 +41,4 @@ private:
 };
 
 void CalculateMatrix(void);
+Vector3f Unproject(Vector2<int> pos);

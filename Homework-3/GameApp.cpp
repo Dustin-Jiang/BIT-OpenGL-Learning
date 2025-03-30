@@ -22,6 +22,7 @@ void Test()
 {
 	std::cout << "Test: RotationMatrix " << RotationMatrix({ 0, 1, 0 }, 90) << std::endl;
 	std::cout << "Test: RotatedPosition " << RotatedPosition(Vector3f {1, 0, 0}, RotationMatrix({0, 1, 0}, 90)) << std::endl;
+    std::cout << "test: KeyCode('w'): " << KeyCode('w') << std::endl;
 }
 
 GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()), planets{},
@@ -62,6 +63,7 @@ void GameApp::OnResize() {}
 
 void GameApp::OnKey(int key, int x, int y)
 {
+    std::cout << "Key: " << key << std::endl;
 	switch (key)
 	{
 	case KeyCode('w'):
@@ -120,11 +122,38 @@ void GameApp::OnMouseMove(int x, int y)
 	pMouse->Update(x, y);
 }
 
+void GameApp::OnMouse(int button, int state, int x, int y)
+{
+    pMouse->Update(button, state, x, y);
+}
+
 void GameApp::OnUpdate(int val)
 {
 	gluLookAt(pCamera->Position.x(), pCamera->Position.y(), pCamera->Position.z(),
 		pCamera->Center().x(), pCamera->Center().y(), pCamera->Center().z(),
 		pCamera->Up.x(), pCamera->Up.y(), pCamera->Up.z());
+	
+    if (pMouse->IsClick())
+	{
+        Vector3f dir = Unproject({ pMouse->x, pMouse->y });
+
+		float depth = 1024000.0f;
+        Planet* selected = nullptr;
+        for (auto& p : planets)
+        {
+            p->isSelected = false;
+            float d = p->CheckHit(pCamera->Position, dir, pCamera->Front);
+			if (d > 0.0 && d < depth)
+			{
+                depth = d;
+                selected = p.get();
+			}
+        }
+        if (selected)
+        {
+            selected->isSelected = true;
+        }
+	}
 
 	for (auto o : objs)
 	{
@@ -138,4 +167,26 @@ void GameApp::OnRender()
 	{
 		o->Draw();
 	}
+}
+
+Vector3f Unproject(Vector2<int> pos)
+{
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	double modelMatrix[16], projMatrix[16];
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+	glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+
+	pos.y() = viewport[3] - pos.y();
+
+	double x, y, z;
+
+	gluUnProject((double)pos.x(), (double)pos.y(), 0, modelMatrix, projMatrix, viewport, &x, &y, &z);
+    Vector3f vFrom = { (float)x, (float)y, (float)z };
+
+    gluUnProject((double)pos.x(), (double)pos.y(), 1, modelMatrix, projMatrix, viewport, &x, &y, &z);
+    Vector3f vTo = { (float)x, (float)y, (float)z };
+
+	return (vTo - vFrom).Normalized();
 }
