@@ -123,7 +123,7 @@ void CalculateMatrix() {
       }
       else {
         Vector3f v1{ x1, y1, z1 };
-        auto result = RotationMatrix(v1, deg);
+        auto result = RotationMatrix(v1, deg).T();
         out << deg << "\t" << v1 << "\t" << result << std::endl;
       }
       processed = true;

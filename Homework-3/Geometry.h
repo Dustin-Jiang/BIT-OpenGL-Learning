@@ -100,4 +100,19 @@ public:
 	void SetDirection(Vector3f dir);
 };
 
+class Track : public Drawable
+{
+public:
+	std::vector<Point> points;
+	float width;
+	size_t size;
+    size_t current = 0;
+	size_t sampling = 360, count = 0;
+	Track(size_t size, float width);
+	void OnDraw() override;
+    void OnUpdate(int val) override;
+    void AddPoint(Vertex3f point);
+};
+
 Matrix4f RotationMatrix(Vector3f axis, float deg);
+Vector3f RotatedPosition(Vector3f& pos, Matrix4f& m);

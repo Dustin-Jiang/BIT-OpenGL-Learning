@@ -13,10 +13,11 @@ public:
   bool isWire = false;
   Sphere sphere;
   Matrix4f spin, revolution, spinSum, revolutionSum;
+  Track track;
 
   Planet(Vector3f pos, Vector3f color, float radius, float spin = 0.0f, float revolution = 0.0f) : pos(pos), radius(radius),
     sphere(Sphere(Vertex3f{ {0, 0, 0}, color }, radius, 16, 16)), spin(Matrix4f::Identity()), revolution(Matrix4f::Identity()),
-    spinSum(Matrix4f::Identity()), revolutionSum(Matrix4f::Identity())
+    spinSum(Matrix4f::Identity()), revolutionSum(Matrix4f::Identity()), track(1000, 1.0f)
   {
     if (spin != 0.0f)
     {
@@ -30,6 +31,8 @@ public:
 
   void OnDraw() override
   {
+    track.Draw();
+
     glMultMatrixf(revolutionSum.getGlMatrix().data());
     glPushMatrix();
 
@@ -47,6 +50,13 @@ public:
 
     spinSum = spinSum * spin;
     revolutionSum = revolutionSum * revolution;
+
+    track.AddPoint(Vertex3f{ WorldPosition(), {0.8, 0.8, 0.8} });
+  }
+
+  Vector3f WorldPosition()
+  {
+    return RotatedPosition(pos, revolutionSum);
   }
 };
 

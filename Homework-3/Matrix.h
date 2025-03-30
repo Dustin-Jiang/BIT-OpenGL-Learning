@@ -108,7 +108,7 @@ public:
 		return result;
 	}
 
-	Matrix<_T, H, W> T() const { return Transpose() }
+	Matrix<_T, H, W> T() const { return Transpose(); }
 
 	Matrix<_T, W, H> Inverse() const {
 		static_assert(W == H, "Matrix must be square");

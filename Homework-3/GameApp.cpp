@@ -18,10 +18,17 @@ std::string GBKToUTF8(const std::string& gbkStr) {
 	return std::string(utf8Str.data());
 }
 
+void Test()
+{
+	std::cout << "Test: RotationMatrix " << RotationMatrix({ 0, 1, 0 }, 90) << std::endl;
+	std::cout << "Test: RotatedPosition " << RotatedPosition(Vector3f {1, 0, 0}, RotationMatrix({0, 1, 0}, 90)) << std::endl;
+}
+
 GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()), planets{},
 pMouse(Mouse::GetInstance())
 {
 	CalculateMatrix();
+	Test();
 	pCamera->Move({ 100, 40, 100 });
 	pCamera->SetLookAt({ 0, 0, 0 });
 
