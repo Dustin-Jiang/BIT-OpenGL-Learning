@@ -56,7 +56,6 @@ public:
     {
         sphere.isWire = isWire;
 
-
         spinSum = spinSum * spin;
         revolutionSum = revolutionSum * revolution;
 
@@ -98,10 +97,48 @@ public:
     Venus(Vector3f pos) : Planet(pos, { 0.8, 0.8, 0.8 }, 1.0f, 0.5f, 0.3f) {};
 };
 
-class Earth : public Planet
+class Moon : public Planet
 {
 public:
-    Earth(Vector3f pos) : Planet(pos, { 0, 0.3, 1 }, 2.0f, 1.0f, 0.2f) {};
+    Moon(Vector3f pos) : Planet ({ pos, {150.0 / 256,146.0 / 256,143.0 / 256}, 0.5f, 0.1f, 10.0f }) {};
+    void OnUpdate(int interval) override
+    {
+        Planet::OnUpdate(interval);
+        std::cout << "Moon: " << WorldPosition() << std::endl;
+    }
+};
+
+class Earth : public Planet
+{
+    Moon moon;
+public:
+    Earth(Vector3f pos) : Planet(pos, { 0, 0.3, 1 }, 2.0f, 1.0f, 0.2f), moon({ 3.0,0.0,0.0 }) {};
+
+    void OnDraw() override
+    {
+        track.Draw();
+
+        glMultMatrixf(revolutionSum.getGlMatrix().data());
+        glPushMatrix();
+
+        glTranslatef(pos.x(), pos.y(), pos.z());
+
+        if (isSelected) selection.Draw();
+
+        moon.Draw();
+
+        glMultMatrixf(spinSum.getGlMatrix().data());
+
+        sphere.Draw();
+
+        glPopMatrix();
+    }
+    void OnUpdate(int interval)
+    {
+        Planet::OnUpdate(interval);
+        moon.isWire = isWire;
+        moon.Update(interval);
+    }
 };
 
 class Mars : public Planet

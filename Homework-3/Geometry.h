@@ -137,7 +137,7 @@ public:
     float width;
     size_t size;
     size_t current = 0;
-    size_t sampling = 360, count = 0;
+    size_t sampling = 60, count = 0;
     Track(size_t size, float width);
     void OnDraw() override;
     void OnUpdate(int val) override;
