@@ -173,7 +173,6 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GLApp.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MovingSphere.h" />
     <ClCompile Include="Spaceship.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

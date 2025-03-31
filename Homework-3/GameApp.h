@@ -7,7 +7,6 @@
 #include "Stars.h"
 #include "Planet.h"
 #include "Spaceship.h"
-#include "MovingSphere.h"
 
 #include <iostream>
 #include <fstream>
@@ -39,7 +38,6 @@ private:
 	std::shared_ptr<Mouse> pMouse;
 	std::vector<std::shared_ptr<Planet>> planets;
 
-	std::shared_ptr<MovingSphere> pMovingSphere;
     std::shared_ptr<Spaceship> pSpaceship;
 };
 

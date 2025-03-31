@@ -77,9 +77,6 @@
     <ClCompile Include="Geometry.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MovingSphere.h">
-      <Filter>头文件</Filter>
-    </ClCompile>
     <ClCompile Include="CalculateMatrix.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

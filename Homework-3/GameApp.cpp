@@ -41,9 +41,6 @@ pMouse(Mouse::GetInstance())
 
 	objs.push_back(std::make_shared<Stars>(100));
 
-    pMovingSphere = std::make_shared<MovingSphere>(Vertex3f{ {0, 0, 0}, {1, 0, 0} }, 1.0f, 20, 20);
-    objs.push_back(pMovingSphere);
-
 	planets.push_back(std::make_shared<Sun>(Sun({ 0,0,0 })));
     planets.push_back(std::make_shared<Mercury>(Mercury({ 25,0,0 })));
     planets.push_back(std::make_shared<Venus>(Venus({ 30,0,0 })));
@@ -108,34 +105,6 @@ void GameApp::OnKey(int key, int x, int y)
             p->isWire = !p->isWire;
         }
         break;
-	case KeyCode('i'):
-		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{0, 0.05, 0}; });
-		break;
-	case KeyCode('k'):
-		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0, -0.05, 0 }; });
-		break;
-	case KeyCode('j'):
-		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ -0.05, 0, 0 }; });
-		break;
-    case KeyCode('l'):
-		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0.05, 0, 0 }; });
-		break;
-    case KeyCode('u'):
-		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0, 0, 0.05 }; });
-		break;
-    case KeyCode('o'):
-		pMovingSphere->CalcVelocity([](Vector3f v){ return v + Vector3f{ 0, 0, -0.05 }; });
-		break;
-    case KeyCode('y'):
-		pMovingSphere->CalcVelocity([](Vector3f v) { return v * 1.2; });
-		break;
-    case KeyCode('h'):
-		pMovingSphere->CalcVelocity([](Vector3f v) { return v * 0.8; });
-		break;
-    case KeyCode(' '):
-		pMovingSphere->ResetVelocity();
-		pMovingSphere->ResetPosition();
-		break;
 	default:
 		break;
 	}
