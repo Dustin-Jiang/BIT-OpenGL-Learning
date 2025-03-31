@@ -106,8 +106,8 @@ Cube::Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front) : vertex(ve
 void Cube::OnUpdate(int interval)
 {
     front = front.Normalized();
-    right = up.Cross(front).Normalized();
-    up = front.Cross(right).Normalized();
+    right = front.Cross(up).Normalized();
+    up = right.Cross(front).Normalized();
     
     rotation = Matrix4f(right.x(), up.x(), front.x(), 0.0,
         right.y(), up.y(), front.y(), 0.0,

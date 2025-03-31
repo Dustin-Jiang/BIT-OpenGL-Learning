@@ -23,6 +23,7 @@ void Test()
 	std::cout << "Test: RotationMatrix " << RotationMatrix({ 0, 1, 0 }, 90) << std::endl;
 	std::cout << "Test: RotatedPosition " << RotatedPosition(Vector3f {1, 0, 0}, RotationMatrix({0, 1, 0}, 90)) << std::endl;
     std::cout << "test: KeyCode('w'): " << KeyCode('w') << std::endl;
+	std::cout << "test: KeyCode('\\r'): " << KeyCode('\r') << std::endl;
 }
 
 GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()), planets{},
@@ -84,6 +85,22 @@ void GameApp::OnKey(int key, int x, int y)
 	case KeyCode('d'):
 		//pCamera->Move(pCamera->Right * 0.033 * 5);
 		pSpaceship->Yaw(-0.05);
+		break;
+	case KeyCode('r'):
+		pSpaceship->Pitch(0.05);
+		break;
+	case KeyCode('f'):
+		pSpaceship->Pitch(-0.05);
+		break;
+	case KeyCode('\r'):
+		for (auto& p : planets)
+		{
+            if (p->isSelected)
+            {
+                pSpaceship->Follow(p);
+				break;
+            }
+		}
 		break;
     case KeyCode(GLUT_KEY_F1):
         for (auto &p : planets)
