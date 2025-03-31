@@ -35,9 +35,6 @@ pMouse(Mouse::GetInstance())
 	pCamera->SetLookAt({ 0, 0, 0 });
 
 	glEnable(GL_DEPTH_TEST);
-	/*objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {1,0,0}},{{50, 0, 0}, {1,0,0}} })));
-	objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {0,1,0}},{{0, 50, 0}, {0,1,0}} })));
-	objs.push_back(std::make_shared<Arrow>(Arrow({ {{0,0,0}, {0,0,1}},{{0, 0, 50}, {0,0,1}} })));*/
 
 	objs.push_back(std::make_shared<Stars>(100));
 
@@ -68,19 +65,15 @@ void GameApp::OnKey(int key, int x, int y)
 	switch (key)
 	{
 	case KeyCode('w'):
-		//pCamera->Move(pCamera->Front * 0.033 * 5);
         pSpaceship->speed = std::min(pSpaceship->speed * 1.25, 1.0);
 		break;
 	case KeyCode('s'):
-		//pCamera->Move(-pCamera->Front * 0.033 * 5);
 		pSpaceship->speed = std::max(pSpaceship->speed * 0.8, 0.125);
 		break;
 	case KeyCode('a'):
-		//pCamera->Move(-pCamera->Right * 0.033 * 5);
 		pSpaceship->Yaw(0.05);
 		break;
 	case KeyCode('d'):
-		//pCamera->Move(pCamera->Right * 0.033 * 5);
 		pSpaceship->Yaw(-0.05);
 		break;
 	case KeyCode('r'):
