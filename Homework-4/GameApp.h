@@ -19,6 +19,7 @@
 #include "Matrix.h"
 #include "Euler.h"
 #include "Quaternion.h"
+#include "Keyboard.h"
 
 #include <memory>
 #include <vector>
@@ -30,17 +31,18 @@ public:
 	void OnResize();
 	void OnUpdate(int val);
 	void OnRender();
-	void OnKey(int key, int x, int y);
 	void OnMouseMove(int x, int y);
     void OnMouse(int button, int state, int x, int y);
+	void HandleKey();
 
 private:
 	std::vector<pDrawable> objs;
 	std::shared_ptr<Camera> pCamera;
+	Keyboard* pKeyboard = Keyboard::GetInstance();
 	std::shared_ptr<Mouse> pMouse;
 	std::vector<std::shared_ptr<Planet>> planets;
 
-    std::shared_ptr<Spaceship> pSpaceship;
+	std::shared_ptr<Spaceship> pSpaceship;
 };
 
 void Calculate(void);

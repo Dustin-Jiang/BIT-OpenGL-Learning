@@ -2,7 +2,6 @@
 #pragma once
 #include "stdafx.h"
 #include "GLApp.h"
-#include "Keyboard.h"
 
 GLApp::GLApp(int argc, char* argv[]): app()
 {
@@ -32,8 +31,10 @@ void GLApp::Init(
 	glutDisplayFunc(GLApp::RenderWrapper);
 	glutReshapeFunc(GLApp::OnResizeWrapper);
 	glutKeyboardFunc(GLApp::OnKeyDownWrapper);
-    glutMouseFunc(GLApp::OnMouseWrapper);
+	glutKeyboardUpFunc(GLApp::OnKeyUpWrapper);  // 添加按键抬起的回调
 	glutSpecialFunc(GLApp::OnSpecialDownWrapper);
+	glutSpecialUpFunc(GLApp::OnSpecialUpWrapper); // 添加特殊键抬起的回调
+	glutMouseFunc(GLApp::OnMouseWrapper);
 	glutPassiveMotionFunc(GLApp::OnMouseMoveWrapper);
 }
 
@@ -76,9 +77,14 @@ void GLApp::OnResize(int w, int h)
 	app.OnResize();
 }
 
-void GLApp::OnKeyDown(int key, int x, int y)
+void GLApp::OnKeyDown(Key key, int x, int y)
 {
-	app.OnKey(key, x, y);
+	pKeyboard->OnKeyDown(key, x, y);
+}
+
+void GLApp::OnKeyUp(Key key, int x, int y)
+{
+	pKeyboard->OnKeyUp(key, x, y);
 }
 
 void GLApp::OnMouseMove(int x, int y)
@@ -128,6 +134,15 @@ void GLApp::OnKeyDownWrapper(unsigned char key, int x, int y)
 	}
 }
 
+void GLApp::OnKeyUpWrapper(unsigned char key, int x, int y)
+{
+	GLApp* app = static_cast<GLApp*>(GetInstance());
+	if (app)
+	{
+		app->OnKeyUp(KeyCode(key), x, y);
+	}
+}
+
 void GLApp::OnSpecialDownWrapper(int key, int x, int y)
 {
   GLApp* app = static_cast<GLApp*>(GetInstance());
@@ -135,6 +150,15 @@ void GLApp::OnSpecialDownWrapper(int key, int x, int y)
   {
 	app->OnKeyDown(KeyCode(key), x, y);
   }
+}
+
+void GLApp::OnSpecialUpWrapper(int key, int x, int y)
+{
+	GLApp* app = static_cast<GLApp*>(GetInstance());
+	if (app)
+	{
+		app->OnKeyUp(KeyCode(key), x, y);
+	}
 }
 
 void GLApp::OnMouseMoveWrapper(int x, int y)
@@ -148,9 +172,9 @@ void GLApp::OnMouseMoveWrapper(int x, int y)
 
 void GLApp::OnMouseWrapper(int button, int state, int x, int y)
 {
-    GLApp* app = static_cast<GLApp*>(GetInstance());
-    if (app)
-    {
-        app->OnMouse(button, state, x, y);
-    }
+	GLApp* app = static_cast<GLApp*>(GetInstance());
+	if (app)
+	{
+		app->OnMouse(button, state, x, y);
+	}
 }

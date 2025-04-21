@@ -4,6 +4,7 @@
 #include "math.h"
 #include "Vector.h"
 #include "GameApp.h"
+#include "Keyboard.h"
 
 #include <string>
 
@@ -20,7 +21,8 @@ public:
 	void OnRender();
 	void OnResize(Vector2f screenSize);
 	void OnResize(int w, int h);
-	void OnKeyDown(int key, int x, int y);
+	void OnKeyDown(Key key, int x, int y);
+	void OnKeyUp(Key key, int x, int y);  // 添加按键抬起处理函数
 	void OnMouseMove(int x, int y);
     void OnMouse(int button, int state, int x, int y);
 private:
@@ -32,13 +34,16 @@ private:
 	std::string title;
 
 	GameApp app;
+	Keyboard* pKeyboard = Keyboard::GetInstance();
 	const int interval = 1;
 
 	static void RenderWrapper();
 	static void OnResizeWrapper(int w, int h);
 	static void OnUpdateWrapper(int val);
 	static void OnKeyDownWrapper(unsigned char key, int x, int y);
+	static void OnKeyUpWrapper(unsigned char key, int x, int y);  // 添加按键抬起的回调包装函数
 	static void OnSpecialDownWrapper(int key, int x, int y);
+	static void OnSpecialUpWrapper(int key, int x, int y);  // 添加特殊键抬起的回调包装函数
 	static void OnMouseMoveWrapper(int x, int y);
 	static void OnMouseWrapper(int button, int state, int x, int y);
 };

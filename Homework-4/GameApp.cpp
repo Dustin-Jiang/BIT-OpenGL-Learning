@@ -4,8 +4,6 @@
 #include "GameApp.h"
 #include <iostream>
 
-#include "Keyboard.h"
-
 std::string GBKToUTF8(const std::string& gbkStr) {
 	int len = MultiByteToWideChar(CP_ACP, 0, gbkStr.c_str(), -1, NULL, 0);
 	std::vector<wchar_t> wstr(len);
@@ -26,7 +24,7 @@ void Test()
 	std::cout << "test: KeyCode('\\r'): " << KeyCode('\r') << std::endl;
 }
 
-GameApp::GameApp() : objs{}, pCamera(std::make_shared<Camera>()), planets{},
+GameApp::GameApp() : objs{}, pCamera(std::make_shared<VectorCamera>()), planets{},
 pMouse(Mouse::GetInstance())
 {
 	Calculate();
@@ -59,53 +57,55 @@ pMouse(Mouse::GetInstance())
 
 void GameApp::OnResize() {}
 
-void GameApp::OnKey(int key, int x, int y)
+void GameApp::HandleKey()
 {
-    std::cout << "Key: " << key << std::endl;
-	switch (key)
-	{
-	case KeyCode('w'):
-        pSpaceship->speed = std::min(pSpaceship->speed * 1.25, 1.0);
-		break;
-	case KeyCode('s'):
+	if (pKeyboard->IsKeyDown('w'))
+		pCamera->Move(pCamera->Front * 0.033 * 5);
+	if (pKeyboard->IsKeyDown('s'))
+		pCamera->Move(-pCamera->Front * 0.033 * 5);
+	if (pKeyboard->IsKeyDown('a'))
+		pCamera->Move(-pCamera->Right * 0.033 * 5);
+	if (pKeyboard->IsKeyDown('d'))
+		pCamera->Move(pCamera->Right * 0.033 * 5);
+	if (pKeyboard->IsKeyDown('i'))
+		pSpaceship->speed = std::min(pSpaceship->speed * 1.25, 1.0);
+	if (pKeyboard->IsKeyDown('k'))
 		pSpaceship->speed = std::max(pSpaceship->speed * 0.8, 0.125);
-		break;
-	case KeyCode('a'):
+	if (pKeyboard->IsKeyDown('j'))
 		pSpaceship->Yaw(0.05);
-		break;
-	case KeyCode('d'):
-		pSpaceship->Yaw(-0.05);
-		break;
-	case KeyCode('r'):
+	if (pKeyboard->IsKeyDown('l'))
+		pSpaceship->Yaw(-0.05); 
+	if (pKeyboard->IsKeyDown('y'))
 		pSpaceship->Pitch(0.05);
-		break;
-	case KeyCode('f'):
+	if (pKeyboard->IsKeyDown('h'))
 		pSpaceship->Pitch(-0.05);
-		break;
-	case KeyCode('\r'):
+	if (pKeyboard->IsKeyDown('\r'))
+	{
 		for (auto& p : planets)
 		{
-            if (p->isSelected)
-            {
-                pSpaceship->Follow(p);
+			if (p->isSelected)
+			{
+				pSpaceship->Follow(p);
 				break;
-            }
+			}
 		}
-		break;
-    case KeyCode(GLUT_KEY_F1):
-        for (auto &p : planets)
-        {
-            p->isWire = !p->isWire;
-        }
-        break;
-	default:
-		break;
+	}
+	if (pKeyboard->IsKeyPress(GLUT_KEY_F1))
+	{
+		for (auto& p : planets)
+		{
+			p->isWire = !p->isWire;
+		}
 	}
 }
 
 void GameApp::OnMouseMove(int x, int y)
 {
 	pMouse->Update(x, y);
+	auto yaw = -1.0f * 0.033 * pMouse->deltaX;
+	auto pitch = -1.0f * 0.033 * pMouse->deltaY;
+	pCamera->Yaw(yaw);
+	pCamera->Pitch(pitch);
 }
 
 void GameApp::OnMouse(int button, int state, int x, int y)
@@ -115,6 +115,7 @@ void GameApp::OnMouse(int button, int state, int x, int y)
 
 void GameApp::OnUpdate(int val)
 {
+	HandleKey();
 	gluLookAt(pCamera->Position.x(), pCamera->Position.y(), pCamera->Position.z(),
 		pCamera->Center().x(), pCamera->Center().y(), pCamera->Center().z(),
 		pCamera->Up.x(), pCamera->Up.y(), pCamera->Up.z());
