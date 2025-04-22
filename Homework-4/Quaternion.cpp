@@ -2,12 +2,17 @@
 #include "Euler.h"
 #include "Quaternion.h"
 
+#include "Geometry.h"
+
 Quaternion::Quaternion(const Matrix4f& m) {
     w = std::sqrt(m(0,0) + m(1,1) + m(2,2) + 1) / 2.0f;
     float s = 1 / (4.0f * w);
     x = (m(1,2) - m(2,1)) * s;
     y = (m(2,0) - m(0,2)) * s;
     z = (m(0,1) - m(1,0)) * s;
+
+    float norm = std::sqrt(w * w + x * x + y * y + z * z);
+    w /= norm, x /= norm, y /= norm, z /= norm;
 }
 
 void Quaternion::Inverse() {
@@ -147,13 +152,7 @@ Vector3f Quaternion::GetAxis() const {
 
 Matrix4f Quaternion::ToRotateMatrix() const {
     Quaternion q = Normalized();
-    Matrix4f v = {
-        1 - 2 * y * y - 2 * z * z, 2 * x * y + 2 * w * z, 2 * x * z - 2 * w * y, 0.0f,
-        2 * x * y - 2 * w * z, 1 - 2 * x * x - 2 * z * z, 2 * y * z + 2 * w * x, 0.0f,
-        2 * x * z + 2 * w * y, 2 * y * z - 2 * w * x, 1 - 2 * x * x - 2 * y * y, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
-    };
-    return v;
+    return RotationMatrix(GetAxis(), GetAngle(), false);
 }
 
 Euler Quaternion::ToEuler() const {
@@ -169,8 +168,12 @@ Euler Quaternion::ToEuler() const {
     return Euler { h, p, b };
 }
 
+Vector3f Quaternion::ParseVector() const {
+    return Vector3f { x, y, z };
+}
+
 Vector3f Quaternion::ToVector() const {
-    Quaternion direction = { 0, 1, 0, 0 };
+    Quaternion direction { 0, 0, 0, -1 };
     auto result = (*this) * direction * Inversed();
-    return Vector3f { result.x, result.y, result.z };
+    return result.ParseVector();
 }

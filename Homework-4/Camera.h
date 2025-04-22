@@ -206,17 +206,33 @@ class QuaternionCamera : public Camera
 {
 	Quaternion q;
 public:
-	Vector3f& Up() { up = pTarget ? pTarget->Up() : q.ToVector().Cross(Front()); return up; }
-	Vector3f& Front() { front = pTarget ? pTarget->Front() : q.ToVector().Normalized(); return front; }
-	Vector3f& Right() { right = pTarget ? pTarget->Right() : front.Cross(Up()); return right; }
+	Vector3f& Up() { 
+		if (pTarget) return pTarget->Up();
+		// 通过四元数旋转世界up向量得到相机的up向量
+		up = (q * Quaternion(0, 0, 1, 0) * q.Inversed()).ParseVector().Normalized();
+		return up;
+	}
+	Vector3f& Front() { 
+		if (pTarget) return pTarget->Front();
+		// 初始front向量是(0,0,-1)，所以用Quaternion(0, 0, 0, -1)
+		front = (q * Quaternion(0, 0, 0, -1) * q.Inversed()).ParseVector().Normalized();
+		return front;
+	}
+	Vector3f& Right() { 
+		if (pTarget) return pTarget->Right();
+		right = Front().Cross(Up());  // 注意顺序，确保right指向正确的方向
+		return right;
+	}
+	
 	QuaternionCamera(Vector3f position = { 0, 0, 0 }, Quaternion q = { 1, 0, 0, 0 }) : q(q)
 	{
 		Position() = position;
-		auto worldUp = Vector3f { 0, 1, 0 };
-		front = q.ToVector().Normalized();
-		right = Front().Cross(worldUp);
-		up = right.Cross(Front());
+		// 首先更新front和up向量
+		front = q.ToVector();
+		up = (q * Quaternion(0, 0, 1, 0) * q.Inversed()).ToVector().Normalized();
+		right = front.Cross(up);  // 最后计算right向量
 	}
+
 	void Move(Vector3f v)
 	{
 		Position() += v;
@@ -306,7 +322,7 @@ class TransitionCamera {
 private:
 	std::shared_ptr<SwitchableCamera> pFrom, pTo, pTransition;
 	int t = 0;
-	const int DURATION = 5;
+	const int DURATION = 60;
 	bool transiting = false;
 	Quaternion directionFrom, directionTo;
 	Vector3f posFrom, posTo;
@@ -360,11 +376,8 @@ public:
 				transiting = false;
 				t = 0;
 				std::swap(pTo, pFrom);
-				// 确保target正确传递
-				if (pTarget) {
-					pFrom->Get().SetTarget(*pTarget);
-				}
-			} else {
+			}
+			else {
 				auto q = directionFrom.Slerp(directionTo, float(t) / DURATION);
 				auto pos = posFrom + (posTo - posFrom) * (t / float(DURATION));
 				pTransition->Get().SetPosition(pos);

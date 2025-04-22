@@ -98,6 +98,7 @@ public:
 
     Euler ToEuler() const;
     Vector3f ToVector() const;
+    Vector3f ParseVector() const;
 
     Matrix4f ToRotateMatrix() const;
 

@@ -22,8 +22,11 @@ void Test()
 	std::cout << "Test: RotatedPosition " << RotatedPosition(Vector3f {1, 0, 0}, RotationMatrix({0, 1, 0}, 90)) << std::endl;
 	std::cout << "test: KeyCode('w'): " << KeyCode('w') << std::endl;
 	std::cout << "test: KeyCode('\\r'): " << KeyCode('\r') << std::endl;
-	Quaternion q { PI / 6.0f, {1, 1, 1} };
-	std::cout << "test: " << q.ToEuler().ToVector() << "\t" << q.ToVector() << std::endl;
+	Quaternion q { RotationMatrix({0,1,0}, 60) };
+	std::cout << "test: " << q.GetAngle() << "\t" << q.GetAxis() << std::endl;
+
+	Euler e { 30, 10, 15, true };
+    std::cout << "test: " << e.ToRotateMatrix() << "\t" << e.ToQuaternion().ToRotateMatrix() << std::endl;
 }
 
 GameApp::GameApp() : objs{}, pCamera(std::make_shared<TransitionCamera>()), planets{},
@@ -113,6 +116,10 @@ void GameApp::HandleKey()
         std::cout << "Spaceship: " << pSpaceship->Front() << std::endl;
 		pCamera->StartTransition();
 	}
+    if (pKeyboard->IsKeyPress(GLUT_KEY_F10))
+    {
+		pCamera->Switch(CameraType::QuaternionType);
+    }
 }
 
 void GameApp::OnMouseMove(int x, int y)
