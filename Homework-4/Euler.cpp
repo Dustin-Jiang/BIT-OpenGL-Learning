@@ -24,14 +24,22 @@ Euler::Euler(const Vector3f& v): pitch(0.0f), yaw(0.0f), roll(0.0f) {
     roll = 0.0f;
 }
 
-Euler::Euler(const Vector3f& up, const Vector3f& front) {
+Euler::Euler(const Vector3f& up, const Vector3f& front) : pitch(0.0f), yaw(0.0f), roll(0.0f) {
+    if (fabs(up.Dot(front)) > 1e-5) {
+        std::cerr << "Euler: up and front vectors are not orthogonal! Dot Value: " << up.Dot(front) << std::endl;
+        return;
+    }
+    auto worldUp = Vector3f{ 0, 1, 0 };
     Vector3f normalized = front.Normalized();
     Vector3f upNormalized = up.Normalized();
     yaw = atan2(-normalized.x(), -normalized.z());
+
     pitch = asin(normalized.y());
+    
     // 计算滚转角
-    Vector3f right = upNormalized.Cross(front);
-    roll = atan2(right.y(), upNormalized.y());
+    Vector3f right = front.Cross(worldUp).Normalized();
+    Vector3f noRollUp = right.Cross(front);
+    roll = acos(upNormalized.Dot(noRollUp));
 }
 
 Euler::Euler(const Matrix4f& m) {
@@ -75,9 +83,14 @@ Vector3f Euler::FrontVector() const {
 }
 
 Vector3f Euler::UpVector() const {
-    auto globalUp = Vector3f{ 0, 1, 0 };
-    auto front = FrontVector();
-    return front.Cross(globalUp).Cross(front).Normalized();
+    auto rotMatrix = ToRotateMatrix();
+    auto worldUp = Vector3f{ 0, 1, 0 };
+    Matrix3f rotation(
+        rotMatrix(0, 0), rotMatrix(0, 1), rotMatrix(0, 2),
+        rotMatrix(1, 0), rotMatrix(1, 1), rotMatrix(1, 2),
+        rotMatrix(2, 0), rotMatrix(2, 1), rotMatrix(2, 2)
+    );
+    return (rotation * Matrix3f::VMatrix(worldUp)).ToVector().Normalized();
 }
 
 Matrix4f Euler::ToRotateMatrix() const {

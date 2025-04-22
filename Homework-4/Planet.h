@@ -82,25 +82,25 @@ public:
 class Sun : public Planet
 {
 public:
-    Sun(Vector3f pos) : Planet(pos, { 1, 0.8, 0 }, 20.0f, 0.0f, 0.5f) {};
+    Sun(Vector3f pos) : Planet(pos, { 1, 0.8, 0 }, 200.0f, 0.0f, 0.5f) {};
 };
 
 class Mercury : public Planet
 {
 public:
-    Mercury(Vector3f pos) : Planet(pos, { 0.5, 0.5, 0.5 }, 1.0f, 1.0f, 0.5f) {};
+    Mercury(Vector3f pos) : Planet(pos, { 0.5, 0.5, 0.5 }, 10.0f, 1.0f, 0.5f) {};
 };
 
 class Venus : public Planet
 {
 public:
-    Venus(Vector3f pos) : Planet(pos, { 0.8, 0.8, 0.8 }, 1.0f, 0.5f, 0.3f) {};
+    Venus(Vector3f pos) : Planet(pos, { 0.8, 0.8, 0.8 }, 10.0f, 0.5f, 0.3f) {};
 };
 
 class Moon : public Planet
 {
 public:
-    Moon(Vector3f pos) : Planet ({ pos, {150.0 / 256,146.0 / 256,143.0 / 256}, 0.5f, 0.1f, 10.0f }) {};
+    Moon(Vector3f pos) : Planet ({ pos, {150.0 / 256,146.0 / 256,143.0 / 256}, 5.0f, 0.1f, 10.0f }) {};
     void OnUpdate(int interval) override
     {
         Planet::OnUpdate(interval);
@@ -111,7 +111,7 @@ class Earth : public Planet
 {
     Moon moon;
 public:
-    Earth(Vector3f pos) : Planet(pos, { 0, 0.3, 1 }, 2.0f, 1.0f, 0.2f), moon({ 3.0,0.0,0.0 }) {};
+    Earth(Vector3f pos) : Planet(pos, { 0, 0.3, 1 }, 20.0f, 1.0f, 0.2f), moon({ 3.0,0.0,0.0 }) {};
 
     void OnDraw() override
     {
@@ -143,21 +143,21 @@ public:
 class Mars : public Planet
 {
 public:
-    Mars(Vector3f pos) : Planet(pos, { 1, 0.4, 0 }, 1.5f, 0.5f, 0.1f) {};
+    Mars(Vector3f pos) : Planet(pos, { 1, 0.4, 0 }, 15.0f, 0.5f, 0.1f) {};
 };
 
 class Jupiter : public Planet
 {
 public:
-    Jupiter(Vector3f pos) : Planet(pos, { 181.f / 256, 162.f / 256, 119.f / 256 }, 8.0f, 0.5f, 0.05f) {};
+    Jupiter(Vector3f pos) : Planet(pos, { 181.f / 256, 162.f / 256, 119.f / 256 }, 80.0f, 0.5f, 0.05f) {};
 };
 
 class Saturn : public Planet
 {
     Ring ring;
 public:
-    Saturn(Vector3f pos) : Planet(pos, { 213.f / 256, 181.f / 256, 122.f / 256 }, 7.0f, 0.5f, 0.03f),
-        ring({ { 0,0,0 }, { 178.0f/256, 166.0f/256, 141.0f/256 } }, { 0,0.8,0.6 }, 8, 9, 25) {};
+    Saturn(Vector3f pos) : Planet(pos, { 213.f / 256, 181.f / 256, 122.f / 256 }, 70.0f, 0.5f, 0.03f),
+        ring({ { 0,0,0 }, { 178.0f/256, 166.0f/256, 141.0f/256 } }, { 0,0.8,0.6 }, 80, 90, 250) {};
 
     void OnDraw() override
     {
@@ -188,11 +188,11 @@ public:
 class Uranus : public Planet
 {
 public:
-    Uranus(Vector3f pos) : Planet(pos, { 0.5, 0.5, 1 }, 3.0f, 0.5f, 0.02f) {};
+    Uranus(Vector3f pos) : Planet(pos, { 0.5, 0.5, 1 }, 30.0f, 0.5f, 0.02f) {};
 };
 
 class Neptune : public Planet
 {
 public:
-    Neptune(Vector3f pos) : Planet(pos, { 0, 0, 1 }, 3.0f, 0.5f, 0.01f) {};
+    Neptune(Vector3f pos) : Planet(pos, { 0, 0, 1 }, 30.0f, 0.5f, 0.01f) {};
 };

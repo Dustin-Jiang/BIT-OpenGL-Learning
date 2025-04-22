@@ -34,6 +34,12 @@ public:
 		}
 		deltaX = x - prevX;
 		deltaY = y - prevY;
+
+		if (abs(deltaX) >= 300 || abs(deltaY) >= 300)
+        {
+            deltaX = 0;
+        }
+
 		prevX = x;
 		prevY = y;
 	}

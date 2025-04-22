@@ -37,12 +37,10 @@ public:
 
 private:
 	std::vector<pDrawable> objs;
-	std::shared_ptr<Camera> pCamera;
+	std::shared_ptr<TransitionCamera> pCamera;
 	Keyboard* pKeyboard = Keyboard::GetInstance();
 	std::shared_ptr<Mouse> pMouse;
 	std::vector<std::shared_ptr<Planet>> planets;
-
-	bool isEuler;
 
 	std::shared_ptr<Spaceship> pSpaceship;
 };

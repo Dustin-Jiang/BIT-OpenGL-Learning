@@ -22,37 +22,41 @@ void Test()
 	std::cout << "Test: RotatedPosition " << RotatedPosition(Vector3f {1, 0, 0}, RotationMatrix({0, 1, 0}, 90)) << std::endl;
 	std::cout << "test: KeyCode('w'): " << KeyCode('w') << std::endl;
 	std::cout << "test: KeyCode('\\r'): " << KeyCode('\r') << std::endl;
+	Quaternion q { PI / 6.0f, {1, 1, 1} };
+	std::cout << "test: " << q.ToEuler().ToVector() << "\t" << q.ToVector() << std::endl;
 }
 
-GameApp::GameApp() : objs{}, pCamera(std::make_shared<EulerCamera>()), isEuler(true), planets{},
+GameApp::GameApp() : objs{}, pCamera(std::make_shared<TransitionCamera>()), planets{},
 pMouse(Mouse::GetInstance())
 {
 	Calculate();
 	Test();
-	pCamera->Move({ 100, 40, 100 });
-	pCamera->SetLookAt({ 0, 0, 0 });
+	pCamera->Get().Move({ 500, 200, 500 });
+	pCamera->Get().SetLookAt({ 0, 0, 0 });
 
 	glEnable(GL_DEPTH_TEST);
 
 	objs.push_back(std::make_shared<Stars>(100));
 
 	planets.push_back(std::make_shared<Sun>(Sun({ 0,0,0 })));
-	planets.push_back(std::make_shared<Mercury>(Mercury({ 25,0,0 })));
-	planets.push_back(std::make_shared<Venus>(Venus({ 30,0,0 })));
-	planets.push_back(std::make_shared<Earth>(Earth({ 35,0,0 })));
-	planets.push_back(std::make_shared<Mars>(Mars({ 40,0,0 })));
-	planets.push_back(std::make_shared<Jupiter>(Jupiter({ 50,0,0 })));
-	planets.push_back(std::make_shared<Saturn>(Saturn({ 65,0,0 })));
-	planets.push_back(std::make_shared<Uranus>(Uranus({ 80,0,0 })));
-	planets.push_back(std::make_shared<Neptune>(Neptune({ 90,0,0 })));
+	planets.push_back(std::make_shared<Mercury>(Mercury({ 250,0,0 })));
+	planets.push_back(std::make_shared<Venus>(Venus({ 300,0,0 })));
+	planets.push_back(std::make_shared<Earth>(Earth({ 350,0,0 })));
+	planets.push_back(std::make_shared<Mars>(Mars({ 400,0,0 })));
+	planets.push_back(std::make_shared<Jupiter>(Jupiter({ 500,0,0 })));
+	planets.push_back(std::make_shared<Saturn>(Saturn({ 700,0,0 })));
+	planets.push_back(std::make_shared<Uranus>(Uranus({ 900,0,0 })));
+	planets.push_back(std::make_shared<Neptune>(Neptune({ 1000,0,0 })));
 
 	for (auto &p : planets)
 	{
 	  objs.push_back(p);
 	}
 
-	pSpaceship = std::make_shared<Spaceship>(Spaceship({ 40,0,20 }));
+	pSpaceship = std::make_shared<Spaceship>(Spaceship({ 200,0,100 }));
 	objs.push_back(pSpaceship);
+
+    pCamera->SetTarget(*pSpaceship);
 }
 
 void GameApp::OnResize() {}
@@ -60,13 +64,13 @@ void GameApp::OnResize() {}
 void GameApp::HandleKey()
 {
 	if (pKeyboard->IsKeyDown('w'))
-		pCamera->Move(pCamera->Front() * 0.033 * 5);
+		pCamera->Get().Move(pCamera->Get().Front() * 0.033 * 5);
 	if (pKeyboard->IsKeyDown('s'))
-		pCamera->Move(-pCamera->Front() * 0.033 * 5);
+		pCamera->Get().Move(-pCamera->Get().Front() * 0.033 * 5);
 	if (pKeyboard->IsKeyDown('a'))
-		pCamera->Move(-pCamera->Right() * 0.033 * 5);
+		pCamera->Get().Move(-pCamera->Get().Right() * 0.033 * 5);
 	if (pKeyboard->IsKeyDown('d'))
-		pCamera->Move(pCamera->Right() * 0.033 * 5);
+		pCamera->Get().Move(pCamera->Get().Right() * 0.033 * 5);
 	if (pKeyboard->IsKeyDown('i'))
 		pSpaceship->speed = std::min(pSpaceship->speed * 1.25, 1.0);
 	if (pKeyboard->IsKeyDown('k'))
@@ -99,18 +103,15 @@ void GameApp::HandleKey()
 	}
 	if (pKeyboard->IsKeyPress(GLUT_KEY_F2))
 	{
-		if (!isEuler)
-		{
-			auto up = pCamera->Up(), front = pCamera->Front();
-			std::cout << "ToEuler: " << up << "\t" << front;
-			pCamera = std::make_shared<EulerCamera>(EulerCamera { pCamera->Position, Euler(up, front) });
-		}
+		if (pCamera->Type() == CameraType::EulerType)
+			pCamera->Switch(CameraType::VectorType);
 		else
-		{
-			std::cout << "ToVector: " << pCamera->Up() << "\t" << pCamera->Front();
-			pCamera = std::make_shared<VectorCamera>(pCamera->Position, pCamera->Up(), pCamera->Front());
-		}
-		isEuler = !isEuler;
+			pCamera->Switch(CameraType::EulerType);
+	}
+	if (pKeyboard->IsKeyPress(GLUT_KEY_F3))
+	{
+        std::cout << "Spaceship: " << pSpaceship->Front() << std::endl;
+		pCamera->StartTransition();
 	}
 }
 
@@ -119,8 +120,8 @@ void GameApp::OnMouseMove(int x, int y)
 	pMouse->Update(x, y);
 	auto yaw = -1.0f * 0.033 * pMouse->deltaX;
 	auto pitch = -1.0f * 0.033 * pMouse->deltaY;
-	pCamera->Yaw(yaw);
-	pCamera->Pitch(pitch);
+	pCamera->Get().Yaw(yaw);
+	pCamera->Get().Pitch(pitch);
 }
 
 void GameApp::OnMouse(int button, int state, int x, int y)
@@ -131,9 +132,11 @@ void GameApp::OnMouse(int button, int state, int x, int y)
 void GameApp::OnUpdate(int val)
 {
 	HandleKey();
-	gluLookAt(pCamera->Position.x(), pCamera->Position.y(), pCamera->Position.z(),
-		pCamera->Center().x(), pCamera->Center().y(), pCamera->Center().z(),
-		pCamera->Up().x(), pCamera->Up().y(), pCamera->Up().z());
+	pCamera->Update();
+
+	gluLookAt(pCamera->Get().Position().x(), pCamera->Get().Position().y(), pCamera->Get().Position().z(),
+		pCamera->Get().Center().x(), pCamera->Get().Center().y(), pCamera->Get().Center().z(),
+		pCamera->Get().Up().x(), pCamera->Get().Up().y(), pCamera->Get().Up().z());
 	
 	if (pMouse->IsClick())
 	{
@@ -144,7 +147,7 @@ void GameApp::OnUpdate(int val)
 		for (auto& p : planets)
 		{
 			p->isSelected = false;
-			float d = p->CheckHit(pCamera->Position, dir, pCamera->Front());
+			float d = p->CheckHit(pCamera->Get().Position(), dir, pCamera->Get().Front());
 			if (d > 0.0 && d < depth)
 			{
 				depth = d;

@@ -168,3 +168,9 @@ Euler Quaternion::ToEuler() const {
     float b = 0;
     return Euler { h, p, b };
 }
+
+Vector3f Quaternion::ToVector() const {
+    Quaternion direction = { 0, 1, 0, 0 };
+    auto result = (*this) * direction * Inversed();
+    return Vector3f { result.x, result.y, result.z };
+}

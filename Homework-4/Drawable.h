@@ -26,8 +26,18 @@ public:
 		OnUpdate(val);
 	};
 protected:
-	virtual void OnDraw() = 0;
+	virtual void OnDraw() {};
 	virtual void OnUpdate(int val) {};
 };
 
 using pDrawable = std::shared_ptr<Drawable>;
+
+class Bindable : public Drawable {
+public:
+	virtual Vector3f Position() = 0;
+	virtual Vector3f Front() = 0;
+	virtual Vector3f Up() = 0;
+    virtual Vector3f Right() {
+        return Front().Cross(Up());
+    }
+};

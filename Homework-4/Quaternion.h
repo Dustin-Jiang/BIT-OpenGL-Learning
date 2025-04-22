@@ -97,6 +97,7 @@ public:
     std::array<Quaternion, SIZE> Slerp(const std::array<Quaternion, SIZE>& q, float t) const;
 
     Euler ToEuler() const;
+    Vector3f ToVector() const;
 
     Matrix4f ToRotateMatrix() const;
 

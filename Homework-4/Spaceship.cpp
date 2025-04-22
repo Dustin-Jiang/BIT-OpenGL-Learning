@@ -1,6 +1,7 @@
 #include "Spaceship.h"
 
-Spaceship::Spaceship(Vector3f pos) : cube(Cube(Vertex3f{ pos, { 0,1,0 } }, 1.0, { 0,1,0 }, { 0.6,0,0.8 })) {};
+Spaceship::Spaceship(Vector3f pos) :
+    cube(Cube(Vertex3f{ pos, { 0,1,0 } }, 1.0, { 0,1,0 }, { 0.6,0,0.8 })) {};
 
 void Spaceship::OnDraw()
 {
@@ -47,4 +48,16 @@ void Spaceship::Pitch(double rad)
 void Spaceship::Follow(std::shared_ptr<Planet> &p)
 {
     target = p;
+}
+
+Vector3f Spaceship::Position() {
+    return cube.vertex.pos;
+}
+
+Vector3f Spaceship::Up() {
+    return cube.up;
+}
+
+Vector3f Spaceship::Front() {
+    return cube.front;
 }
