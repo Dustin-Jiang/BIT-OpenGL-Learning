@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <cassert>
-#include "Euler.h"
 #include "Quaternion.h"
 
 const auto worldUp = Vector3f{ 0, 1, 0 };
@@ -18,7 +17,7 @@ class Camera
 protected:
 	Vector3f up, right, front;
 	Vector3f position;
-	std::shared_ptr<Bindable> pTarget = nullptr;
+	Bindable* pTarget = nullptr;  // 改用原始指针
 public:
 	Camera() = default;
 	virtual void Move(Vector3f v) = 0;
@@ -38,52 +37,82 @@ public:
 		}
 		return position;
 	}
+	
 	void SetTarget(Bindable& target) {
-		pTarget = std::shared_ptr<Bindable>(&target);
+		pTarget = &target;  // 使用原始指针，不进行所有权管理
 	}
-	void ReleaseTarget(std::shared_ptr<Bindable>& dest) {
-        dest = pTarget;
-        pTarget = nullptr;
+	
+	Bindable* ReleaseTarget() {
+		auto prev = pTarget;
+		pTarget = nullptr;
+		return prev;
 	}
 };
 
 class VectorCamera : public Camera
 {
 public:
-	VectorCamera(Vector3f position = { 0, 0, 0 }, Vector3f up = { 0, 1, 0 }, Vector3f front = { 0, 0, -1 })
+	Vector3f& Up() { return pTarget ? pTarget->Up() : up; }
+	Vector3f& Right() { return pTarget ? pTarget->Right() : right; }
+	Vector3f& Front() { return pTarget ? pTarget->Front() : front; }
+	
+	VectorCamera(Vector3f position = { 0, 0, 0 }, Vector3f upv = { 0, 1, 0 }, Vector3f frontv = { 0, 0, -1 })
 	{
-		if (fabs(up.Dot(front)) > 1e-5) {
-			std::cerr << "Euler: up and front vectors are not orthogonal! Dot Value: " << up.Dot(front) << std::endl;
-			return;
+		// 首先标准化输入向量
+		frontv = frontv.Normalized();
+		upv = upv.Normalized();
+		
+		if (fabs(upv.Dot(frontv)) > 1e-5) {
+			std::cerr << "VectorCamera: input up and front vectors are not orthogonal! Dot Value: " << upv.Dot(frontv) << std::endl;
+			// 强制使用worldUp重建正交基
+			upv = Vector3f{ 0, 1, 0 };
 		}
+		
 		Camera::position = position;
-		Camera::up = up.Normalized();
-		Camera::front = front.Normalized();
-		Camera::right = front.Cross(up).Normalized();
+		front = frontv;
+		right = front.Cross(upv).Normalized();
+		up = right.Cross(front).Normalized();
+		
+		// 验证正交性
+		ValidateOrthogonality();
 	}
 
 	void Move(Vector3f v)
 	{
 		Position() += v;
-	};
+	}
 
 	void Yaw(float rad)
 	{
-		Front() = (Front() * cos(rad) - Right() * sin(rad)).Normalized();
-		Right() = Front().Cross(Up()).Normalized();
+		if (pTarget) return;
+		// 绕up轴旋转front和right
+		front = (Front() * cos(rad) - Right() * sin(rad)).Normalized();
+		right = front.Cross(up).Normalized();
+		up = right.Cross(front).Normalized();
+		ValidateOrthogonality();
 	}
 
 	void Pitch(float rad)
 	{
-		Front() = (Front() * cos(rad) + Up() * sin(rad)).Normalized();
-		Up() = Right().Cross(Front()).Normalized();
+		if (pTarget) return;
+		// 绕right轴旋转front和up
+		front = (Front() * cos(rad) + Up() * sin(rad)).Normalized();
+		up = right.Cross(front).Normalized();
+		right = front.Cross(up).Normalized();
+		ValidateOrthogonality();
 	}
 
 	void Roll(float rad)
 	{
-		auto rot = Matrix3f(cos(rad), -sin(rad), 0.f, sin(rad), cos(rad), 0.f, 0.f, 0.f, 1.f);
-		Right() = (rot * Matrix3f::VMatrix(Right())).ToVector().Normalized();
-		Up() = (rot * Matrix3f::VMatrix(Up())).ToVector().Normalized();
+		if (pTarget) return;
+		// 绕front轴旋转up和right
+		Matrix3f rot(cos(rad), -sin(rad), 0.f,
+					sin(rad), cos(rad), 0.f,
+					0.f, 0.f, 1.f);
+		right = (rot * Matrix3f::VMatrix(Right())).ToVector().Normalized();
+		up = right.Cross(front).Normalized();
+		right = front.Cross(up).Normalized(); // 再次确保right完全正交
+		ValidateOrthogonality();
 	}
 
 	Vector3f Center()
@@ -98,9 +127,25 @@ public:
 
 	void SetLookAt(Vector3f lookat)
 	{
-		Front() = (lookat - Position()).Normalized();
-		Right() = Front().Cross(worldUp).Normalized();
-		Up() = Right().Cross(Front()).Normalized();
+		front = (lookat - Position()).Normalized();
+		right = front.Cross(worldUp).Normalized();
+		up = right.Cross(front).Normalized();
+		ValidateOrthogonality();
+	}
+
+private:
+	void ValidateOrthogonality()
+	{
+		float frontUpDot = fabs(front.Dot(up));
+		float rightUpDot = fabs(right.Dot(up));
+		float frontRightDot = fabs(front.Dot(right));
+		
+		if (frontUpDot > 1e-5 || rightUpDot > 1e-5 || frontRightDot > 1e-5) {
+			std::cerr << "VectorCamera: Vectors not orthogonal!" << std::endl;
+			std::cerr << "front·up: " << frontUpDot 
+				<< " right·up: " << rightUpDot 
+				<< " front·right: " << frontRightDot << std::endl;
+		}
 	}
 };
 
@@ -126,14 +171,17 @@ public:
 	};
 	void Yaw(float rad)
 	{
+		if (pTarget) return;
 		euler.yaw += rad;
 	}
 	void Pitch(float rad)
 	{
+		if (pTarget) return;
 		euler.pitch += rad;
 	}
 	void Roll(float rad)
 	{
+		if (pTarget) return;
 		euler.roll += rad;
 	}
 	Vector3f Center()
@@ -216,12 +264,11 @@ public:
 	std::shared_ptr<Camera> pCamera;
 	CameraType Type = CameraType::EulerType;
 	SwitchableCamera(Vector3f position = { 0, 0, 0 }, Vector3f up = { 0, 1, 0 }, Vector3f front = { 0, 0, -1 })
-	 : pCamera(std::make_shared<EulerCamera>(position, Euler(up, front))) {};
+		: pCamera(std::make_shared<EulerCamera>(position, Euler(up, front))) {};
 
 	void Switch(CameraType target)
 	{
-		std::shared_ptr<Bindable> pTarget = nullptr;
-        pCamera->ReleaseTarget(pTarget);
+		Bindable* pTarget = pCamera->ReleaseTarget();
 
 		if (target == CameraType::EulerType)
 		{
@@ -234,22 +281,19 @@ public:
 		{
 			std::cout << "ToVector: " << pCamera->Up() << "\t" << pCamera->Front() << std::endl;
 			pCamera = std::make_shared<VectorCamera>(pCamera->Position(), pCamera->Up(), pCamera->Front());
-			std::cout << "EulerCamera: " << pCamera->Up() << "\t" << pCamera->Front() << std::endl;
+			std::cout << "VectorCamera: " << pCamera->Up() << "\t" << pCamera->Front() << std::endl;
 			Type = target;
 		}
 		else if (target == CameraType::QuaternionType)
 		{
 			auto up = pCamera->Up(), front = pCamera->Front();
 			pCamera = std::make_shared<QuaternionCamera>(pCamera->Position(), Euler(up, front).ToQuaternion());
+			Type = target;
 		}
 
 		if (pTarget)
 		{
 			pCamera->SetTarget(*pTarget);
-		}
-		else
-		{
-			pCamera->ReleaseTarget(pTarget);
 		}
 	}
 
@@ -266,13 +310,15 @@ private:
 	bool transiting = false;
 	Quaternion directionFrom, directionTo;
 	Vector3f posFrom, posTo;
+	Bindable* pTarget = nullptr;
+
 public:
 	TransitionCamera():
 		pFrom(std::make_shared<SwitchableCamera>()),
 		pTo(std::make_shared<SwitchableCamera>()),
 		pTransition(std::make_shared<SwitchableCamera>()),
-        directionFrom(Quaternion{ 1, 0, 0, 0 }),
-        directionTo(Quaternion{ 1, 0, 0, 0 })
+		directionFrom(Quaternion{ 1, 0, 0, 0 }),
+		directionTo(Quaternion{ 1, 0, 0, 0 })
 	{
 		pTransition->Switch(CameraType::QuaternionType);
 	}
@@ -282,62 +328,55 @@ public:
 		pTransition->Get().SetPosition(pFrom->Get().Position());
 		pTransition->Get().SetLookAt(pFrom->Get().Center());
 
-        auto fromUp = pFrom->Get().Up(), fromFront = pFrom->Get().Front();
-        directionFrom = Euler(fromUp, fromFront).ToQuaternion();
+		auto fromUp = pFrom->Get().Up(), fromFront = pFrom->Get().Front();
+		directionFrom = Euler(fromUp, fromFront).ToQuaternion();
 
-        auto toUp = pTo->Get().Up(), toFront = pTo->Get().Front();
-        directionTo = Euler(toUp, toFront).ToQuaternion();
+		auto toUp = pTo->Get().Up(), toFront = pTo->Get().Front();
+		directionTo = Euler(toUp, toFront).ToQuaternion();
 
 		std::cout << "StartTransition: " << directionTo.ToVector() << std::endl;
 
-        posFrom = pFrom->Get().Position();
-        posTo = pTo->Get().Position();
+		posFrom = pFrom->Get().Position();
+		posTo = pTo->Get().Position();
 	}
 
-	void Switch(CameraType type)
-	{
+	void Switch(CameraType type) {
 		pFrom->Switch(type);
 	}
 
-    void SetTarget(Bindable& target)
-    {
-        pTo->Get().SetTarget(target);
-    }
-
-	CameraType Type()
-	{
-        return pFrom->Type;
+	void SetTarget(Bindable& target) {
+		pTarget = &target;
+		pTo->Get().SetTarget(target);
 	}
 
-	void Update()
-	{
-		/*if (t == DURATION)
-		{
-			transiting = false;
-			t = 0;
-			std::swap(pTo, pFrom);
-		}
-		else if (transiting) {
-			t += 1;
-			auto q = directionFrom.Slerp(directionTo, float(t) / DURATION);
-			auto pos = posFrom + (posTo - posFrom) * (t / float(DURATION));
-			pTransition->Get().SetPosition(pos);
-			pTransition->Get().SetLookAt(pos + q.ToVector());
-		}*/
+	CameraType Type() {
+		return pFrom->Type;
+	}
+
+	void Update() {
 		if (transiting) {
-			transiting = false;
-            t = 0;
-            std::swap(pTo, pFrom);
+			t += 1;
+			if (t >= DURATION) {
+				transiting = false;
+				t = 0;
+				std::swap(pTo, pFrom);
+				// 确保target正确传递
+				if (pTarget) {
+					pFrom->Get().SetTarget(*pTarget);
+				}
+			} else {
+				auto q = directionFrom.Slerp(directionTo, float(t) / DURATION);
+				auto pos = posFrom + (posTo - posFrom) * (t / float(DURATION));
+				pTransition->Get().SetPosition(pos);
+				pTransition->Get().SetLookAt(pos + q.ToVector());
+			}
 		}
 	}
 	
 	Camera& Get() {
-		if (transiting)
-		{
+		if (transiting) {
 			return pTransition->Get();
-		}
-		else
-		{
+		} else {
 			return pFrom->Get();
 		}
 	}

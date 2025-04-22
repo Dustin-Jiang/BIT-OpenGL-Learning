@@ -38,8 +38,15 @@ Euler::Euler(const Vector3f& up, const Vector3f& front) : pitch(0.0f), yaw(0.0f)
     
     // 计算滚转角
     Vector3f right = front.Cross(worldUp).Normalized();
-    Vector3f noRollUp = right.Cross(front);
-    roll = acos(upNormalized.Dot(noRollUp));
+    Vector3f noRollUp = right.Cross(front).Normalized();
+
+    auto cosRoll = upNormalized.Dot(noRollUp);
+    if (fabs(fabs(cosRoll) - 1.0f) < 1e-6) {
+        roll = 0.0f;
+    }
+    else {
+        roll = acos(cosRoll);
+    }
 }
 
 Euler::Euler(const Matrix4f& m) {

@@ -174,13 +174,13 @@ public:
 	Vector3(T x, T y, T z) : Vector<T, 3>(x, y, z) {}
 	Vector3(const Vector<T, 3>& v) : Vector<T, 3>(v) {}
 
-	Vector3<T> operator=(const Vector<T, 3>& v)
+	Vector3<T>& operator=(const Vector<T, 3>& v)  // 返回引用
 	{
 		this->data[0] = v.data[0];
 		this->data[1] = v.data[1];
 		this->data[2] = v.data[2];
 		return *this;
-	};
+	}
 
 	// 访问器
 	T& x() { return data[0]; }
@@ -198,12 +198,12 @@ public:
 		);
 	}
 
-    float Depth(const Vector3<T>& from, const Vector3<T>& dir) const
-    {
-        Vector3<T> v = (*this) - from;
-        float t = v.Dot(dir);
-        return t;
-    }
+	float Depth(const Vector3<T>& from, const Vector3<T>& dir) const
+	{
+		Vector3<T> v = (*this) - from;
+		float t = v.Dot(dir);
+		return t;
+	}
 
 	float Distance(const Vector3<T>& from, const Vector3<T>& dir) const
 	{
