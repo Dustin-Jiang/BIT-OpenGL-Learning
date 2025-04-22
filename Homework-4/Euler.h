@@ -25,6 +25,7 @@ public:
     Euler(float yaw_deg, float pitch_deg, float roll_deg, bool isDegree = false);
     Euler(const Euler& e) : pitch(e.pitch), yaw(e.yaw), roll(e.roll) {}
     Euler(const Vector3f& v);
+    Euler(const Vector3f& up, const Vector3f& front);
     Euler(const Matrix4f& m);
 
     float h() const { return yaw; }
@@ -37,6 +38,9 @@ public:
     Quaternion ToQuaternion() const;
     Vector3f ToVector() const;
     Matrix4f ToRotateMatrix() const;
+
+    Vector3f FrontVector() const;
+    Vector3f UpVector() const;
 
     friend std::ostream& operator<<(std::ostream& os, Euler& e) {
         os << e.h() << "," << e.p() << "," << e.b();

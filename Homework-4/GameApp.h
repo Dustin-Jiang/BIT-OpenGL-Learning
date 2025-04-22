@@ -42,6 +42,8 @@ private:
 	std::shared_ptr<Mouse> pMouse;
 	std::vector<std::shared_ptr<Planet>> planets;
 
+	bool isEuler;
+
 	std::shared_ptr<Spaceship> pSpaceship;
 };
 
