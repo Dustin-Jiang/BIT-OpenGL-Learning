@@ -8,6 +8,10 @@
 
 #include "Vector.h"
 
+#ifndef PI
+#define PI 3.14159265358979323846
+#endif
+
 template<typename _T, std::size_t W, std::size_t H>
 class Matrix
 {
@@ -248,3 +252,22 @@ using HVector3f = Matrix<float, 3, 1>;
 using HVector4f = Matrix<float, 4, 1>;
 using VVector3f = Matrix<float, 1, 3>;
 using VVector4f = Matrix<float, 1, 4>;
+
+inline Matrix4f RotationMatrix(Vector3f axis, float deg, bool isDegree = true)
+{
+	float rad = 0.0f;
+	if (isDegree)
+		rad = deg * PI / 180;
+	else rad = deg;
+	Vector3f v = axis.Normalized();
+	VVector3f u{ v.x(), v.y(), v.z() };
+	Matrix3f ux{ 0 , -v.z(), v.y(), v.z(), 0, -v.x(), -v.y(), v.x(), 0 };
+	Matrix3f i = Matrix3f::Identity();
+	auto result3f = i * cos(rad) + ux * sin(rad) + (u * u.Transpose()) * (1 - cos(rad));
+	Matrix4f result{
+	  result3f(0,0), result3f(0,1), result3f(0,2), 0,
+	  result3f(1,0), result3f(1,1), result3f(1,2), 0,
+	  result3f(2,0), result3f(2,1), result3f(2,2), 0,
+	  0, 0, 0, 1 };
+	return result;
+}

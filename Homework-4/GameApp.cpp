@@ -59,7 +59,10 @@ pMouse(Mouse::GetInstance())
 	pSpaceship = std::make_shared<Spaceship>(Spaceship({ 200,0,100 }));
 	objs.push_back(pSpaceship);
 
-    pCamera->SetTarget(*pSpaceship);
+	pSpaceman = std::make_shared<Spaceman>(Vector3f{0, -2, -4}, Vector3f{0, 0, -1}, 2.0f, pSpaceship);
+	pSpaceship->SetSpaceman(pSpaceman);
+
+	pCamera->SetTarget(pSpaceman.get());
 }
 
 void GameApp::OnResize() {}
@@ -79,13 +82,13 @@ void GameApp::HandleKey()
 	if (pKeyboard->IsKeyDown('k'))
 		pSpaceship->speed = std::max(pSpaceship->speed * 0.8, 0.125);
 	if (pKeyboard->IsKeyDown('j'))
-		pSpaceship->Yaw(0.05);
+		pSpaceship->Yaw(0.01);
 	if (pKeyboard->IsKeyDown('l'))
-		pSpaceship->Yaw(-0.05); 
+		pSpaceship->Yaw(-0.01); 
 	if (pKeyboard->IsKeyDown('y'))
-		pSpaceship->Pitch(0.05);
+		pSpaceship->Pitch(0.01);
 	if (pKeyboard->IsKeyDown('h'))
-		pSpaceship->Pitch(-0.05);
+		pSpaceship->Pitch(-0.01);
 	if (pKeyboard->IsKeyDown('\r'))
 	{
 		for (auto& p : planets)
@@ -113,7 +116,6 @@ void GameApp::HandleKey()
 	}
 	if (pKeyboard->IsKeyPress(GLUT_KEY_F3))
 	{
-        std::cout << "Spaceship: " << pSpaceship->Front() << std::endl;
 		pCamera->StartTransition();
 	}
     if (pKeyboard->IsKeyPress(GLUT_KEY_F10))

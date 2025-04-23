@@ -38,6 +38,50 @@ void Point::OnDraw()
     glEnd();
 }
 
+void Triangle::OnDraw()
+{
+    glPushMatrix();
+    auto pos = bottomCenter.pos;
+
+    glColor3f(bottomCenter.color.x(), bottomCenter.color.y(), bottomCenter.color.z());
+    glBegin(GL_TRIANGLE_STRIP);
+    glVertex3f(pos.x() - width / 2, pos.y(), pos.z());
+    glVertex3f(pos.x() + width / 2, pos.y(), pos.z());
+    glVertex3f(pos.x(), pos.y(), pos.z() - height);
+    glEnd();
+
+    glPopMatrix();
+}
+
+Circle::Circle(Vertex3f vertex, float radius, unsigned int slices) : vertex(vertex), radius(radius), slices(slices), vertices()
+{
+    // 遍历圆周
+    for (int i = 0; i < slices; i++) {
+        float theta = 2.0f * PI * i / slices; // θ 范围 [0, 2π]
+        float x = radius * cos(theta);
+        float z = radius * sin(theta);
+        // 将顶点加入数组：依次存放 x, y, z
+        vertices.emplace_back(x, vertex.y(), z);
+    }
+};
+
+void Circle::OnDraw()
+{
+    glPushMatrix();
+    glTranslatef(vertex.x(), vertex.y(), vertex.z());
+    glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
+    glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+    glLineWidth(1.0f);
+    // 绘制圆
+    glBegin(GL_TRIANGLE_FAN);
+    for (auto& v : vertices)
+    {
+        glVertex3f(v.x(), v.y(), v.z());
+    }
+    glEnd();
+    glPopMatrix();
+};
+
 Sphere::Sphere(Vertex3f vertex, float radius, unsigned int slices, unsigned int stacks) : vertex(vertex),
 radius(radius), slices(slices), stacks(stacks), vertices() 
 {
@@ -87,8 +131,8 @@ void Sphere::OnDraw()
     glPopMatrix();
 };
 
-Cube::Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front) : vertex(vertex), size(size),
-    up(up), front(front), right(up.Cross(front)), vertices()
+Cube::Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front) : vertex(vertex), height(size), width(size),
+    length(size), up(up), front(front), right(up.Cross(front)), vertices()
 {
     float half = size / 2;
     vertices = {
@@ -102,6 +146,25 @@ Cube::Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front) : vertex(ve
         { { -half, -half, half }, vertex.color }
     };
 };
+
+Cube::Cube(Vertex3f vertex, float length, float width, float height, Vector3f up, Vector3f front) : vertex(vertex), height(height), width(width),
+    length(length), up(up), front(front), right(up.Cross(front)), vertices()
+{
+    float halfHeight = height / 2;
+    float halfWidth = width / 2;
+    float halfLength = length / 2;
+
+    vertices = {
+        { { halfWidth, halfHeight, halfLength }, vertex.color },
+        { { halfWidth, halfHeight, -halfLength }, vertex.color },
+        { { -halfWidth, halfHeight, -halfLength }, vertex.color },
+        { { -halfWidth, halfHeight, halfLength }, vertex.color },
+        { { halfWidth, -halfHeight, halfLength }, vertex.color },
+        { { halfWidth, -halfHeight, -halfLength }, vertex.color },
+        { { -halfWidth, -halfHeight, -halfLength }, vertex.color },
+        { { -halfWidth, -halfHeight, halfLength }, vertex.color }
+    };
+}
 
 void Cube::OnUpdate(int interval)
 {
@@ -121,35 +184,93 @@ void Cube::OnDraw()
     glTranslatef(vertex.x(), vertex.y(), vertex.z());
     glMultMatrixf(rotation.getGlMatrix().data());
 
-    glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
     glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
     glLineWidth(1.0f);
 
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
-    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
-    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
-    glVertex3f(vertices[3].x(), vertices[3].y(), vertices[3].z());
-    glEnd();
-    glBegin(GL_LINE_LOOP);
-    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
-    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
-    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
-    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
-    glEnd();
-    glBegin(GL_LINES);
-    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
-    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
-    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
-    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
-    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
-    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
-    glVertex3f(vertices[3].x(), vertices[3].y(), vertices[3].z());
-    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
-    glEnd();
+    // 设置多边形绘制模式
+    if (isWire) {
+        // 如果是线框模式，直接设置所有面为线框
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        // 实体模式时，仍然保持背面为线框
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_LINE);
+        
+        // 启用面剔除，但先禁用它来绘制线框
+        // 先绘制所有面的线框
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        DrawCube();
+        
+        // 再启用面剔除绘制实体面
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);  // 剔除背面
+        glPolygonMode(GL_FRONT, GL_FILL);
+        DrawCube();
+        glDisable(GL_CULL_FACE);
+    }
 
     glPopMatrix();
-};
+}
+
+// 添加辅助方法来绘制立方体的几何体
+void Cube::DrawCube()
+{
+    glBegin(GL_TRIANGLES);
+    // 前面 - 使用逆时针顺序定义顶点（从外部看）
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
+    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
+    
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
+    glVertex3f(vertices[3].x(), vertices[3].y(), vertices[3].z());
+    
+    // 右面
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
+    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
+    
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
+    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
+    
+    // 后面
+    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
+    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
+    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
+    
+    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
+    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
+    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
+    
+    // 左面
+    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
+    glVertex3f(vertices[3].x(), vertices[3].y(), vertices[3].z());
+    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
+    
+    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
+    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
+    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
+    
+    // 上面
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[3].x(), vertices[3].y(), vertices[3].z());
+    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
+    
+    glVertex3f(vertices[0].x(), vertices[0].y(), vertices[0].z());
+    glVertex3f(vertices[2].x(), vertices[2].y(), vertices[2].z());
+    glVertex3f(vertices[1].x(), vertices[1].y(), vertices[1].z());
+    
+    // 下面
+    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
+    glVertex3f(vertices[5].x(), vertices[5].y(), vertices[5].z());
+    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
+    
+    glVertex3f(vertices[4].x(), vertices[4].y(), vertices[4].z());
+    glVertex3f(vertices[6].x(), vertices[6].y(), vertices[6].z());
+    glVertex3f(vertices[7].x(), vertices[7].y(), vertices[7].z());
+    glEnd();
+}
 
 Cylinder::Cylinder(Vertex3f bottom, Vertex3f to, float radius, unsigned int slices) : bottom(bottom),
 to(to), radius(radius), slices(slices), vertices(), top({0, to.pos.Length(), 0}, bottom.color)
@@ -311,25 +432,6 @@ void Track::OnUpdate(int val)
     {
         points[i].Update(val);
     }
-}
-
-Matrix4f RotationMatrix(Vector3f axis, float deg, bool isDegree)
-{
-  float rad = 0.0f;
-  if (isDegree)
-    rad = deg * PI / 180;
-  else rad = deg;
-  Vector3f v = axis.Normalized();
-  VVector3f u{ v.x(), v.y(), v.z() };
-  Matrix3f ux{ 0 , -v.z(), v.y(), v.z(), 0, -v.x(), -v.y(), v.x(), 0 };
-  Matrix3f i = Matrix3f::Identity();
-  auto result3f = i * cos(rad) + ux * sin(rad) + (u * u.Transpose()) * (1 - cos(rad));
-  Matrix4f result{
-    result3f(0,0), result3f(0,1), result3f(0,2), 0,
-    result3f(1,0), result3f(1,1), result3f(1,2), 0,
-    result3f(2,0), result3f(2,1), result3f(2,2), 0,
-    0, 0, 0, 1 };
-  return result;
 }
 
 Vector3f RotatedPosition(Vector3f& pos, Matrix4f& m)

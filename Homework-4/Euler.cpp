@@ -1,6 +1,5 @@
 #include "Euler.h"
 #include "Quaternion.h"
-#include "Geometry.h"
 
 Euler::Euler(float yaw_deg, float pitch_deg, float roll_deg, bool isDegree) {
     if (isDegree) {

@@ -40,4 +40,10 @@ public:
     virtual Vector3f Right() {
         return Front().Cross(Up());
     }
+
+    virtual void Yaw(float rad) = 0;
+    virtual void Pitch(float rad) = 0;
+    virtual void Roll(float rad) = 0;
+
+	virtual void Move(Vector3f v) = 0;
 };

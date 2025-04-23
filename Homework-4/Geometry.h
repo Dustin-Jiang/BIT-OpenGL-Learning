@@ -61,6 +61,28 @@ public:
     void OnDraw() override;
 };
 
+class Triangle : public Drawable
+{
+public:
+    Vertex3f bottomCenter;
+    float width, height;
+    Vector3f front, up;
+    Triangle(Vertex3f pos, float width, float height, Vector3f front, Vector3f up) : bottomCenter(pos), width(width), height(height), front(front), up(up) {};
+    void OnDraw() override;
+};
+
+class Circle : public Drawable
+{
+public:
+    float radius;
+    unsigned int slices;
+    Vertex3f vertex;
+    std::vector<Vector3f> vertices;
+    bool isWire = false;
+    Circle(Vertex3f vertex, float radius, unsigned int slices);
+    void OnDraw() override;
+};
+
 class Sphere : public Drawable
 {
 public:
@@ -78,13 +100,15 @@ class Cube : public Drawable
     Matrix4f rotation = Matrix4f::Identity();
 public:
     std::vector<Vertex3f> vertices;
-    float size;
+    float length, width, height;
     Vertex3f vertex;
     bool isWire = false;
     Vector3f up, right, front;
     Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front);
+    Cube(Vertex3f vertex, float length, float width, float height, Vector3f up, Vector3f front);
     void OnDraw() override;
     void OnUpdate(int interval);
+    void DrawCube();
 };
 
 class Cylinder : public Drawable
@@ -146,5 +170,4 @@ public:
     void AddPoint(Vertex3f point);
 };
 
-Matrix4f RotationMatrix(Vector3f axis, float deg, bool isDegree = true);
 Vector3f RotatedPosition(Vector3f& pos, Matrix4f& m);

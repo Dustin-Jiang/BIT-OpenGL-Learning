@@ -79,32 +79,35 @@ public:
 
 	void Move(Vector3f v)
 	{
+        if (pTarget) {
+            pTarget->Move(v);
+            return;
+        }
 		Position() += v;
 	}
 
 	void Yaw(float rad)
 	{
-		if (pTarget) return;
 		// 绕up轴旋转front和right
 		front = (Front() * cos(rad) - Right() * sin(rad)).Normalized();
 		right = front.Cross(up).Normalized();
 		up = right.Cross(front).Normalized();
 		ValidateOrthogonality();
+		if (pTarget) pTarget->Yaw(rad);
 	}
 
 	void Pitch(float rad)
 	{
-		if (pTarget) return;
 		// 绕right轴旋转front和up
 		front = (Front() * cos(rad) + Up() * sin(rad)).Normalized();
 		up = right.Cross(front).Normalized();
 		right = front.Cross(up).Normalized();
 		ValidateOrthogonality();
+        if (pTarget) pTarget->Pitch(rad);
 	}
 
 	void Roll(float rad)
 	{
-		if (pTarget) return;
 		// 绕front轴旋转up和right
 		Matrix3f rot(cos(rad), -sin(rad), 0.f,
 					sin(rad), cos(rad), 0.f,
@@ -113,6 +116,7 @@ public:
 		up = right.Cross(front).Normalized();
 		right = front.Cross(up).Normalized(); // 再次确保right完全正交
 		ValidateOrthogonality();
+        if (pTarget) pTarget->Roll(rad);
 	}
 
 	Vector3f Center()
@@ -167,22 +171,26 @@ public:
 	}
 	void Move(Vector3f v)
 	{
+		if (pTarget) {
+			pTarget->Move(v);
+			return;
+		}
 		Position() += v;
 	};
 	void Yaw(float rad)
 	{
-		if (pTarget) return;
 		euler.yaw += rad;
+        if (pTarget) pTarget->Yaw(rad);
 	}
 	void Pitch(float rad)
 	{
-		if (pTarget) return;
 		euler.pitch += rad;
+        if (pTarget) pTarget->Pitch(rad);
 	}
 	void Roll(float rad)
 	{
-		if (pTarget) return;
 		euler.roll += rad;
+        if (pTarget) pTarget->Roll(rad);
 	}
 	Vector3f Center()
 	{
@@ -235,6 +243,10 @@ public:
 
 	void Move(Vector3f v)
 	{
+		if (pTarget) {
+			pTarget->Move(v);
+			return;
+		}
 		Position() += v;
 	};
 	void Yaw(float rad)
@@ -360,9 +372,9 @@ public:
 		pFrom->Switch(type);
 	}
 
-	void SetTarget(Bindable& target) {
-		pTarget = &target;
-		pTo->Get().SetTarget(target);
+	void SetTarget(Bindable* target) {
+        pTarget = target;
+        pTo->Get().SetTarget(*pTarget);
 	}
 
 	CameraType Type() {

@@ -7,6 +7,7 @@
 #include "Stars.h"
 #include "Planet.h"
 #include "Spaceship.h"
+#include "Spaceman.h"
 
 #include <iostream>
 #include <fstream>
@@ -43,6 +44,7 @@ private:
 	std::vector<std::shared_ptr<Planet>> planets;
 
 	std::shared_ptr<Spaceship> pSpaceship;
+	std::shared_ptr<Spaceman> pSpaceman;
 };
 
 void Calculate(void);
