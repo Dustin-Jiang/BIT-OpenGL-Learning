@@ -8,6 +8,7 @@
 #include <vector>
 #include <cmath>
 #include "Matrix.h"
+#include "Euler.h"
 
 #ifndef PI
 #define PI 3.14159265358979323846

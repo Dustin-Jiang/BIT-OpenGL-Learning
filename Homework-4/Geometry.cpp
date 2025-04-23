@@ -42,12 +42,14 @@ void Triangle::OnDraw()
 {
     glPushMatrix();
     auto pos = bottomCenter.pos;
+    glTranslatef(pos.x(), pos.y(), pos.z());
+    glMultMatrixf(Euler { up, front }.ToRotateMatrix().getGlMatrix().data());
 
     glColor3f(bottomCenter.color.x(), bottomCenter.color.y(), bottomCenter.color.z());
     glBegin(GL_TRIANGLE_STRIP);
-    glVertex3f(pos.x() - width / 2, pos.y(), pos.z());
-    glVertex3f(pos.x() + width / 2, pos.y(), pos.z());
-    glVertex3f(pos.x(), pos.y(), pos.z() - height);
+    glVertex3f(-width / 2, 0, 0);
+    glVertex3f(width / 2, 0, 0);
+    glVertex3f(0, 0, -height);
     glEnd();
 
     glPopMatrix();

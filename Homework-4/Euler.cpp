@@ -31,12 +31,24 @@ Euler::Euler(const Vector3f& up, const Vector3f& front) : pitch(0.0f), yaw(0.0f)
     auto worldUp = Vector3f{ 0, 1, 0 };
     Vector3f normalized = front.Normalized();
     Vector3f upNormalized = up.Normalized();
-    yaw = atan2(-normalized.x(), -normalized.z());
+
+    if (normalized.x() < 1e-5 && normalized.z() < 1e-5) {
+        yaw = normalized.y() * PI / 2.0f;
+    }
+    else {
+        yaw = atan2(-normalized.x(), -normalized.z());
+    }
 
     pitch = asin(normalized.y());
     
     // 计算滚转角
-    Vector3f right = front.Cross(worldUp).Normalized();
+    Vector3f right = front.Cross(worldUp);
+    if (right.Length() < 1e-6) {
+        right = worldUp.Cross(up).Normalized();
+    }
+    else {
+        right = right.Normalized();
+    }
     Vector3f noRollUp = right.Cross(front).Normalized();
 
     auto cosRoll = upNormalized.Dot(noRollUp);

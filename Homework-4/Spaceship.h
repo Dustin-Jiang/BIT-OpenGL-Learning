@@ -18,8 +18,7 @@ private:
     Vector3f position, front, up;
 
     Cube cube;
-    Triangle wing;
-
+    Triangle wing, tail;
 
     double pitch = 0.0;
     std::shared_ptr<Planet> target = nullptr;
