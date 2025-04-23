@@ -118,8 +118,11 @@ public:
 		static_assert(W == H, "Matrix must be square");
 		Matrix<_T, W, H> result;
 		_T det = Determinant();
-		if (int(det) == 0)
+		if (fabs(det) <= 1e-5)
+		{
+			std::cerr << "Matrix is singular" << std::endl;
 			throw std::runtime_error("Matrix is singular");
+		}
 		for (std::size_t i = 0; i < W; i++) {
 			for (std::size_t j = 0; j < H; j++) {
 				result(i, j) = Cofactor(j, i) / det;
