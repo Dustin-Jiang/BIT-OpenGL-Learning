@@ -2,7 +2,7 @@
 #include "Spaceman.h"
 
 Spaceman::Spaceman(Vector3f pos, Vector3f front, float height, std::shared_ptr<Spaceship> ship) : position(pos), front(front), up({ 0, 1, 0 }),
-	body(Cube(Vertex3f{ {0, 0, 0}, {0.2,0.2,0.8} }, height * 0.05, height * 0.1, height * 0.4, { 0,1,0 }, { 0, 0, -1 })),
+	body(Cube(Vertex3f{ {0, 0, 0}, {0.2,0.2,0.8} }, height * 0.05, height * 0.2, height * 0.4, { 0,1,0 }, { 0, 0, -1 })),
 	leftArm(Cube(Vertex3f{ {0, 0, 0}, {237.0f / 256.0f, 227.0f / 256.0f, 197.0f / 256.0f} }, height * 0.01, height * 0.01, height * 0.2, { 0,1,0 }, { 0, 0, -1 })),
 	rightArm(Cube(Vertex3f{ {0, 0, 0}, {237.0f / 256.0f, 227.0f / 256.0f, 197.0f / 256.0f} }, height * 0.01, height * 0.01, height * 0.2, { 0,1,0 }, { 0, 0, -1 })),
 	leftLeg(Cube(Vertex3f{ {0.0f, height * -0.2f, 0.0f}, {237.0f / 256.0f, 227.0f / 256.0f, 197.0f / 256.0f} }, height * 0.01, height * 0.05, height * 0.4, { 0,1,0 }, { 0, 0, -1 })),
@@ -41,7 +41,7 @@ void Spaceman::OnDraw()
 
     glPopMatrix();
 
-	glTranslatef(height * -0.05, height * 0.4, 0);
+	glTranslatef(0, height * 0.2, 0);
 	body.Draw();
 
 	glTranslatef(0, height * 0.1, 0);
@@ -49,7 +49,7 @@ void Spaceman::OnDraw()
 	glPushMatrix();
 
 	glPushMatrix();
-	glTranslatef(height * -0.1, 0, 0);
+	glTranslatef(height * -0.2, 0, 0);
 	glMultMatrixf(RotationMatrix({ -1,0,0 }, phi, false).getGlMatrix().data());
 	leftArm.Draw();
 	glPopMatrix();
