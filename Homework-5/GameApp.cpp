@@ -30,18 +30,13 @@ void Test()
 }
 
 GameApp::GameApp() : objs{}, pCamera(std::make_shared<TransitionCamera>()), planets{},
-pMouse(Mouse::GetInstance())
-{
+pMouse(Mouse::GetInstance()) {};
+
+void GameApp::Init() {
 	Calculate();
 	Test();
 	pCamera->Get().Move({ 500, 200, 500 });
 	pCamera->Get().SetLookAt({ 0, 0, 0 });
-
-	glEnable(GL_DEPTH_TEST);
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
 
 	objs.push_back(std::make_shared<Stars>(100));
 
@@ -73,14 +68,15 @@ void GameApp::OnResize() {}
 
 void GameApp::HandleKey()
 {
+	float speed = 10.0f;
 	if (pKeyboard->IsKeyDown('w'))
-		pCamera->Get().Move(pCamera->Get().Front() * 0.033 * 5);
+		pCamera->Get().Move(pCamera->Get().Front() * 0.033 * speed);
 	if (pKeyboard->IsKeyDown('s'))
-		pCamera->Get().Move(-pCamera->Get().Front() * 0.033 * 5);
+		pCamera->Get().Move(-pCamera->Get().Front() * 0.033 * speed);
 	if (pKeyboard->IsKeyDown('a'))
-		pCamera->Get().Move(-pCamera->Get().Right() * 0.033 * 5);
+		pCamera->Get().Move(-pCamera->Get().Right() * 0.033 * speed);
 	if (pKeyboard->IsKeyDown('d'))
-		pCamera->Get().Move(pCamera->Get().Right() * 0.033 * 5);
+		pCamera->Get().Move(pCamera->Get().Right() * 0.033 * speed);
 	if (pKeyboard->IsKeyDown('i'))
 		pSpaceship->speed = std::min(pSpaceship->speed * 1.25, 1.0);
 	if (pKeyboard->IsKeyDown('k'))
@@ -150,6 +146,7 @@ void GameApp::OnUpdate(int val)
 	gluLookAt(pCamera->Get().Position().x(), pCamera->Get().Position().y(), pCamera->Get().Position().z(),
 		pCamera->Get().Center().x(), pCamera->Get().Center().y(), pCamera->Get().Center().z(),
 		pCamera->Get().Up().x(), pCamera->Get().Up().y(), pCamera->Get().Up().z());
+	getError();
 	
 	Vector4f pos = { 0,0,0,1 };
 	glLightfv(GL_LIGHT0, GL_POSITION, pos);

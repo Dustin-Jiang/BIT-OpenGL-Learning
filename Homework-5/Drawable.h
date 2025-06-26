@@ -5,10 +5,12 @@
 
 #include <vector>
 #include <memory>
+#include "Texture.h"
 
 class Drawable
 {
 public:
+	std::shared_ptr<Texture> texture = nullptr;
 	virtual void Draw()
 	{
 		glEnable(GL_LINE_SMOOTH);
@@ -29,6 +31,9 @@ public:
 	{
 		OnUpdate(val);
 	};
+	void BindTexture(std::shared_ptr<Texture> t) {
+		texture = t;
+	}
 protected:
 	virtual void OnDraw() {};
 	virtual void OnUpdate(int val) {};

@@ -105,7 +105,7 @@ void Circle::OnDraw()
 };
 
 Sphere::Sphere(Vertex3f vertex, float radius) : vertex(vertex),
-radius(radius), slices(ceil(std::log10(radius)) * 10), stacks(ceil(std::log10(radius)) * 10), vertices()
+radius(radius), slices(radius > 1.f ? (int)(ceil(log10(radius)) * 20) : 20), stacks(radius > 1.f ? (int)(ceil(log10(radius)) * 20) : 20), vertices()
 {
     // 遍历纬度
     for (int i = 0; i < stacks; i++) {
@@ -130,16 +130,25 @@ void Sphere::OnDraw()
 {
     glPushMatrix();
     glTranslatef(vertex.x(), vertex.y(), vertex.z());
-
-    GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
-    GLfloat dif[4] = { vertex.color.x(), vertex.color.y(), vertex.color.z(), 1 };
-    GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
-    
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);		//设置环境光材质属性，背面和正面使用相同的设置
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);		//设置散射光材质属性，背面和正面使用相同的设置
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);	//设置镜面反射光材质属性，背面和正面使用相同的设置
-    glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
     glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+
+    if (texture) {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+        glColor3f(1.0f, 1.0f, 1.0f); // Ensure base color is white
+    } else {
+        GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
+        GLfloat dif[4] = { vertex.color.x(), vertex.color.y(), vertex.color.z(), 1 };
+        GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
+        
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);
+        
+        glDisable(GL_TEXTURE_2D);
+        glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+    }
+    glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
     glLineWidth(1.0f);
 
     // 绘制球体
@@ -153,12 +162,23 @@ void Sphere::OnDraw()
             Vector3f v2 = vertices[i + 1][j % slices];
             Vector3f n2 = v2.Normalized();
 
+            Vector2f texCoord1 = { 1 - (float)j / (float)slices, 1 - (float)i / (float)(stacks - 1) };
+            Vector2f texCoord2 = { 1 - (float)j / (float)slices, 1 - (float)(i + 1) / (float)(stacks - 1) };
+
+            glTexCoord2f(texCoord1.x(), texCoord1.y());
             glNormal3f(n1.x(), n1.y(), n1.z());
             glVertex3f(v1.x(), v1.y(), v1.z());
+            
+            glTexCoord2f(texCoord2.x(), texCoord2.y());
             glNormal3f(n2.x(), n2.y(), n2.z());
             glVertex3f(v2.x(), v2.y(), v2.z());
         }
         glEnd();
+    }
+
+    // 如果启用了纹理，在绘制完成后禁用
+    if (texture) {
+        glDisable(GL_TEXTURE_2D);
     }
 
     glPopMatrix();

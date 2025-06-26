@@ -26,22 +26,18 @@ void GLApp::Init(
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glShadeModel(GL_SMOOTH);
 	glFrontFace(GL_CCW);
 
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-
-	Vector4f amb = { 0.2f,0.2f,0.2f,1 };
-	Vector4f dif = { 0.3, 0.3, 0.3, 1 };
-	Vector4f spe = { 0.2f,0.2f,0.2f,1 };
-	glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, dif);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, spe);
-	glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
-	glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.09f);
-	glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.032f);
-	glEnable(GL_LIGHT0);
+	//Vector4f amb = { 0.2f, 0.2f, 0.2f, 1 };
+	//Vector4f dif = { 0.3f, 0.3f, 0.3f, 1 };
+	//Vector4f spe = { 0.2f, 0.2f, 0.2f, 1 };
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
+	//glLightfv(GL_LIGHT0, GL_DIFFUSE, dif);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, spe);
+	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
+	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.09f);
+	//glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.032f);
+	//glEnable(GL_LIGHT0);
 
 	glutCreateWindow(title.c_str());
 
@@ -53,6 +49,20 @@ void GLApp::Init(
 	glutSpecialUpFunc(GLApp::OnSpecialUpWrapper); // 添加特殊键抬起的回调
 	glutMouseFunc(GLApp::OnMouseWrapper);
 	glutPassiveMotionFunc(GLApp::OnMouseMoveWrapper);
+
+	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
+
+	glEnable(GL_NORMALIZE);
+	glShadeModel(GL_SMOOTH);
+
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+	app.Init();
 }
 
 void GLApp::OnUpdate(int val)

@@ -92,8 +92,13 @@ public:
     Vertex3f vertex;
     bool isWire = false;
     std::vector<std::vector<Vector3f>> vertices;
+    std::shared_ptr<Texture> texture = nullptr;
     Sphere(Vertex3f vertex, float radius);
     void OnDraw() override;
+    void BindTexture(std::shared_ptr<Texture> texture)
+    {
+        this->texture = texture;
+    }
 };
 
 class Cube : public Drawable

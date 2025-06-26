@@ -9,7 +9,7 @@
 #include "Spaceship.h"
 #include "Spaceman.h"
 
-#include <iostream>
+#include <stdexcept>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -29,6 +29,7 @@ class GameApp
 {
 public:
 	GameApp();
+	void Init();
 	void OnResize();
 	void OnUpdate(int val);
 	void OnRender();
