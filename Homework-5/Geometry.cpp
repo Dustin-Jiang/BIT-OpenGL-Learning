@@ -45,22 +45,40 @@ void Triangle::OnDraw()
     glTranslatef(pos.x(), pos.y(), pos.z());
     glMultMatrixf(Euler { up, front }.ToRotateMatrix().getGlMatrix().data());
 
-    GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
-    GLfloat dif[4] = { bottomCenter.color.x(), bottomCenter.color.y(), bottomCenter.color.z(), 1 };
-    GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
-    
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);
+    if (texture) {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+        glColor3f(1.0f, 1.0f, 1.0f); // Ensure base color is white for texture
+    } else {
+        GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
+        GLfloat dif[4] = { bottomCenter.color.x(), bottomCenter.color.y(), bottomCenter.color.z(), 1 };
+        GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
+        
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);
+        
+        glDisable(GL_TEXTURE_2D);
+        glColor3f(bottomCenter.color.x(), bottomCenter.color.y(), bottomCenter.color.z());
+    }
 
-    glColor3f(bottomCenter.color.x(), bottomCenter.color.y(), bottomCenter.color.z());
     glBegin(GL_TRIANGLES);
     Vector3f n = (up.Normalized() + front.Normalized()).Normalized();
     glNormal3f(n.x(), n.y(), n.z());
+    
+    // 添加纹理坐标
+    glTexCoord2f(0.0f, 0.0f);  // 左下角
     glVertex3f(-width / 2, 0, 0);
+    glTexCoord2f(1.0f, 0.0f);  // 右下角
     glVertex3f(width / 2, 0, 0);
+    glTexCoord2f(0.5f, 1.0f);  // 顶点
     glVertex3f(0, 0, -height);
     glEnd();
+
+    // 如果启用了纹理，在绘制完成后禁用
+    if (texture) {
+        glDisable(GL_TEXTURE_2D);
+    }
 
     glPopMatrix();
 }
@@ -82,25 +100,51 @@ void Circle::OnDraw()
     glPushMatrix();
     glTranslatef(vertex.x(), vertex.y(), vertex.z());
 
-    GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
-    GLfloat dif[4] = { vertex.color.x(), vertex.color.y(), vertex.color.z(), 1 };
-    GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
+    if (texture) {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+        glColor3f(1.0f, 1.0f, 1.0f); // Ensure base color is white for texture
+    } else {
+        GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
+        GLfloat dif[4] = { vertex.color.x(), vertex.color.y(), vertex.color.z(), 1 };
+        GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);
+        
+        glDisable(GL_TEXTURE_2D);
+        glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+    }
 
     glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
-    glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
     glLineWidth(1.0f);
-    // 绘制圆
+    
+    // 绘制圆 - 使用三角扇形并添加纹理坐标
     glBegin(GL_TRIANGLE_FAN);
     glNormal3f(0, 1, 0); // 假设圆在XZ平面上，法向量朝上
-    for (auto& v : vertices)
+    
+    // 圆心
+    glTexCoord2f(0.5f, 0.5f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    
+    // 圆周顶点
+    for (int i = 0; i <= vertices.size(); i++)
     {
+        auto& v = vertices[i % vertices.size()];
+        // 计算纹理坐标 (从圆心坐标转换为0-1范围)
+        float texU = (v.x() / radius + 1.0f) * 0.5f;
+        float texV = (v.z() / radius + 1.0f) * 0.5f;
+        glTexCoord2f(texU, texV);
         glVertex3f(v.x(), v.y(), v.z());
     }
     glEnd();
+
+    // 如果启用了纹理，在绘制完成后禁用
+    if (texture) {
+        glDisable(GL_TEXTURE_2D);
+    }
+
     glPopMatrix();
 };
 
@@ -237,14 +281,24 @@ void Cube::OnDraw()
     glTranslatef(vertex.x(), vertex.y(), vertex.z());
     glMultMatrixf(rotation.getGlMatrix().data());
 
-    GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
-    GLfloat dif[4] = { vertex.color.x(), vertex.color.y(), vertex.color.z(), 1 };
-    GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
+    if (texture) {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texture->id);
+        glColor3f(1.0f, 1.0f, 1.0f); // Ensure base color is white
+    }
+    else {
+        GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
+        GLfloat dif[4] = { vertex.color.x(), vertex.color.y(), vertex.color.z(), 1 };
+        GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);		//设置环境光材质属性，背面和正面使用相同的设置
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);		//设置散射光材质属性，背面和正面使用相同的设置
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);	//设置镜面反射光材质属性，背面和正面使用相同的设置
-    glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);
+
+        glDisable(GL_TEXTURE_2D);
+        glColor3f(vertex.color.x(), vertex.color.y(), vertex.color.z());
+    }
+
     glLineWidth(1.0f);
 
     // 设置多边形绘制模式
@@ -275,48 +329,108 @@ void Cube::OnDraw()
 // 添加辅助方法来绘制立方体的几何体
 void Cube::DrawCube()
 {
-    glBegin(GL_QUADS);
+    glBegin(GL_TRIANGLES);
 
-    // Front face (+Z)
+    // Front face (+Z) - 两个三角形
     glNormal3f(0.0f, 0.0f, 1.0f);
+    // 第一个三角形
+    glTexCoord2f(0.0f, 1.0f);
     glVertex3fv(&vertices[3].pos.x());
+    glTexCoord2f(1.0f, 1.0f);
     glVertex3fv(&vertices[0].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
     glVertex3fv(&vertices[4].pos.x());
+    // 第二个三角形
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3fv(&vertices[3].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3fv(&vertices[4].pos.x());
+    glTexCoord2f(0.0f, 0.0f);
     glVertex3fv(&vertices[7].pos.x());
 
-    // Back face (-Z)
+    // Back face (-Z) - 两个三角形
     glNormal3f(0.0f, 0.0f, -1.0f);
+    // 第一个三角形
+    glTexCoord2f(1.0f, 1.0f);
     glVertex3fv(&vertices[1].pos.x());
+    glTexCoord2f(0.0f, 1.0f);
     glVertex3fv(&vertices[2].pos.x());
+    glTexCoord2f(0.0f, 0.0f);
     glVertex3fv(&vertices[6].pos.x());
+    // 第二个三角形
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3fv(&vertices[1].pos.x());
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3fv(&vertices[6].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
     glVertex3fv(&vertices[5].pos.x());
 
-    // Top face (+Y)
+    // Top face (+Y) - 两个三角形
     glNormal3f(0.0f, 1.0f, 0.0f);
+    // 第一个三角形
+    glTexCoord2f(0.0f, 0.0f);
     glVertex3fv(&vertices[2].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
     glVertex3fv(&vertices[1].pos.x());
+    glTexCoord2f(1.0f, 1.0f);
     glVertex3fv(&vertices[0].pos.x());
+    // 第二个三角形
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3fv(&vertices[2].pos.x());
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3fv(&vertices[0].pos.x());
+    glTexCoord2f(0.0f, 1.0f);
     glVertex3fv(&vertices[3].pos.x());
 
-    // Bottom face (-Y)
+    // Bottom face (-Y) - 两个三角形
     glNormal3f(0.0f, -1.0f, 0.0f);
+    // 第一个三角形
+    glTexCoord2f(0.0f, 1.0f);
     glVertex3fv(&vertices[7].pos.x());
+    glTexCoord2f(1.0f, 1.0f);
     glVertex3fv(&vertices[4].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
     glVertex3fv(&vertices[5].pos.x());
+    // 第二个三角形
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3fv(&vertices[7].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3fv(&vertices[5].pos.x());
+    glTexCoord2f(0.0f, 0.0f);
     glVertex3fv(&vertices[6].pos.x());
     
-    // Right face (+X)
+    // Right face (+X) - 两个三角形
     glNormal3f(1.0f, 0.0f, 0.0f);
+    // 第一个三角形
+    glTexCoord2f(0.0f, 1.0f);
     glVertex3fv(&vertices[0].pos.x());
+    glTexCoord2f(1.0f, 1.0f);
     glVertex3fv(&vertices[1].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
     glVertex3fv(&vertices[5].pos.x());
+    // 第二个三角形
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3fv(&vertices[0].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3fv(&vertices[5].pos.x());
+    glTexCoord2f(0.0f, 0.0f);
     glVertex3fv(&vertices[4].pos.x());
 
-    // Left face (-X)
+    // Left face (-X) - 两个三角形
     glNormal3f(-1.0f, 0.0f, 0.0f);
+    // 第一个三角形
+    glTexCoord2f(1.0f, 1.0f);
     glVertex3fv(&vertices[2].pos.x());
+    glTexCoord2f(0.0f, 1.0f);
     glVertex3fv(&vertices[3].pos.x());
+    glTexCoord2f(0.0f, 0.0f);
     glVertex3fv(&vertices[7].pos.x());
+    // 第二个三角形
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3fv(&vertices[2].pos.x());
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3fv(&vertices[7].pos.x());
+    glTexCoord2f(1.0f, 0.0f);
     glVertex3fv(&vertices[6].pos.x());
 
     glEnd();

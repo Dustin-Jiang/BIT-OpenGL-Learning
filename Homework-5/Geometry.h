@@ -68,8 +68,13 @@ public:
     Vertex3f bottomCenter;
     float width, height;
     Vector3f front, up;
+    std::shared_ptr<Texture> texture = nullptr;
     Triangle(Vertex3f pos, float width, float height, Vector3f front, Vector3f up) : bottomCenter(pos), width(width), height(height), front(front), up(up) {};
     void OnDraw() override;
+    void BindTexture(std::shared_ptr<Texture> texture)
+    {
+        this->texture = texture;
+    }
 };
 
 class Circle : public Drawable
@@ -80,8 +85,13 @@ public:
     Vertex3f vertex;
     std::vector<Vector3f> vertices;
     bool isWire = false;
+    std::shared_ptr<Texture> texture = nullptr;
     Circle(Vertex3f vertex, float radius, unsigned int slices);
     void OnDraw() override;
+    void BindTexture(std::shared_ptr<Texture> texture)
+    {
+        this->texture = texture;
+    }
 };
 
 class Sphere : public Drawable
@@ -110,11 +120,16 @@ public:
     Vertex3f vertex;
     bool isWire = false;
     Vector3f up, right, front;
+    std::shared_ptr<Texture> texture = nullptr;
     Cube(Vertex3f vertex, float size, Vector3f up, Vector3f front);
     Cube(Vertex3f vertex, float length, float width, float height, Vector3f up, Vector3f front);
     void OnDraw() override;
     void OnUpdate(int interval);
     void DrawCube();
+    void BindTexture(std::shared_ptr<Texture> texture)
+    {
+        this->texture = texture;
+    }
 };
 
 class Cylinder : public Drawable

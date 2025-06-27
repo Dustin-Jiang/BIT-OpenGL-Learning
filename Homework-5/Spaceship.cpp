@@ -6,6 +6,10 @@ Spaceship::Spaceship(Vector3f pos) : position(pos), up({ 0, 1, 0 }), front({ -0.
     wing(Triangle(Vertex3f({ 0,-2,6 }, { 0.4,0.4,0.4 }), 12.f, 24.f, { 0,0,-1 }, { 0,1,0 })),
     tail(Triangle(Vertex3f({ 0,2,5 }, { 0.4,0.4,0.4 }), 4.f, 6.f, { 0,1,0 }, { 0,0,1 }))
 {
+    auto steel = std::make_shared<Texture>(L"steel.bmp");
+    cube.BindTexture(steel);
+    wing.BindTexture(steel);
+    tail.BindTexture(steel);
 };
 
 void Spaceship::OnDraw()
