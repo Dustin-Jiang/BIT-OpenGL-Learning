@@ -202,6 +202,7 @@ public:
 	Saturn(Vector3f pos) : Planet(pos, { 213.f / 256, 181.f / 256, 122.f / 256 }, 70.0f, 0.5f, 0.03f),
 		ring({ { 0,0,0 }, { 178.0f/256, 166.0f/256, 141.0f/256 } }, { 0,0.8,0.6 }, 80, 90, 250) {
 		this->BindTexture(std::make_shared<Texture>(L"saturn.bmp"));
+		ring.BindTexture(std::make_shared<Texture>(L"saturn_ring.bmp"));
 		this->name = "Saturn";
 	};
 

@@ -576,26 +576,62 @@ color(vertex.color), vertices(), up(up), innerRadius(innerRadius), outerRadius(o
 
 void Ring::OnDraw()
 {
-	glTranslatef(pos.x(), pos.y(), pos.z());
 	glPushMatrix();
-
+	glTranslatef(pos.x(), pos.y(), pos.z());
 	glMultMatrixf(rotation.getGlMatrix().data());
+
+	if (texture) {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture->id);
+		glColor3f(1.0f, 1.0f, 1.0f); // Ensure base color is white for texture
+	}
+	else {
+		GLfloat amb[4] = { 0.4, 0.4, 0.4, 1 };
+		GLfloat dif[4] = { color.x(), color.y(), color.z(), 1 };
+		GLfloat spe[4] = { 0.1, 0.1, 0.1, 1 };
+
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spe);
+
+		glDisable(GL_TEXTURE_2D);
+		glColor3f(color.x(), color.y(), color.z());
+	}
+
 	glPolygonMode(GL_FRONT_AND_BACK, isWire ? GL_LINE : GL_FILL);
-	glColor3f(color.x(), color.y(), color.z());
 	glLineWidth(1.0f);
 	glBegin(GL_TRIANGLE_STRIP);
 
 	Vector3f n = up.Normalized();
 	glNormal3f(n.x(), n.y(), n.z());
+	
 	for (int i = 0; i < slices; i++)
 	{
-		auto v = vertices[0][i];
-		glVertex3f(v.x(), v.y(), v.z());
-		v = vertices[1][i];
-		glVertex3f(v.x(), v.y(), v.z());
+		float theta = 2.0f * PI * i / (slices - 1);
+		
+		// 环状纹理坐标：u沿着环的角度方向，v沿着环的径向方向
+		float texU = (float)i / (float)(slices - 1); // 0到1，沿着环的周长
+		
+		// 内圆顶点
+		auto innerV = vertices[0][i];
+		float innerTexV = 0.0f; // 内圆在径向的起始位置
+		glTexCoord2f(texU, innerTexV);
+		glVertex3f(innerV.x(), innerV.y(), innerV.z());
+		
+		// 外圆顶点
+		auto outerV = vertices[1][i];
+		float outerTexV = 1.0f; // 外圆在径向的结束位置
+		glTexCoord2f(texU, outerTexV);
+		glVertex3f(outerV.x(), outerV.y(), outerV.z());
 	}
 
 	glEnd();
+
+	// 如果启用了纹理，在绘制完成后禁用
+	if (texture) {
+		glDisable(GL_TEXTURE_2D);
+	}
+
 	glPopMatrix();
 }
 
