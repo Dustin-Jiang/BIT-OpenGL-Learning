@@ -131,7 +131,7 @@ public:
 class Moon : public Planet
 {
 public:
-	Moon(Vector3f pos) : Planet ({ pos, {150.0 / 256,146.0 / 256,143.0 / 256}, 5.0f, 0.1f, 10.0f }) {
+	Moon(Vector3f pos) : Planet ({ pos, {150.0 / 256,146.0 / 256,143.0 / 256}, 5.0f, 0.1f, 1.0f }) {
 		this->BindTexture(std::make_shared<Texture>(L"moon.bmp"));
 		this->name = "Moon";
 	};
