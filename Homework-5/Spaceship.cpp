@@ -39,7 +39,7 @@ void Spaceship::OnUpdate(int val)
 		auto dist = (target->WorldPosition() - position).Length();
 		if (dist <= target->radius + 5.0f)
 		{
-			pText->SetContent("Spaceship hit planet at " + target->WorldPosition().toString());
+			pText->SetContent("Spaceship hit " + target->GetName() + " at " + target->WorldPosition().toString());
 			target = nullptr;
 		}
 		Vector3f right = front.Cross(worldUp).Normalized();
