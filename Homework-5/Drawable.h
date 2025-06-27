@@ -26,6 +26,8 @@ public:
 		OnDraw();
 		glPopMatrix();
 		glPopAttrib();
+
+		getError();
 	};
 	void Update(int val)
 	{
@@ -46,13 +48,13 @@ public:
 	virtual Vector3f Position() = 0;
 	virtual Vector3f Front() = 0;
 	virtual Vector3f Up() = 0;
-    virtual Vector3f Right() {
-        return Front().Cross(Up());
-    }
+	virtual Vector3f Right() {
+		return Front().Cross(Up());
+	}
 
-    virtual void Yaw(float rad) = 0;
-    virtual void Pitch(float rad) = 0;
-    virtual void Roll(float rad) = 0;
+	virtual void Yaw(float rad) = 0;
+	virtual void Pitch(float rad) = 0;
+	virtual void Roll(float rad) = 0;
 
 	virtual void Move(Vector3f v) = 0;
 };

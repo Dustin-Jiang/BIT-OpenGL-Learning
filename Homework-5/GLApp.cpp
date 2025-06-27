@@ -28,17 +28,6 @@ void GLApp::Init(
 
 	glFrontFace(GL_CCW);
 
-	//Vector4f amb = { 0.2f, 0.2f, 0.2f, 1 };
-	//Vector4f dif = { 0.3f, 0.3f, 0.3f, 1 };
-	//Vector4f spe = { 0.2f, 0.2f, 0.2f, 1 };
-	//glLightfv(GL_LIGHT0, GL_AMBIENT, amb);
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, dif);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, spe);
-	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0f);
-	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.09f);
-	//glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.032f);
-	//glEnable(GL_LIGHT0);
-
 	glutCreateWindow(title.c_str());
 
 	glutDisplayFunc(GLApp::RenderWrapper);

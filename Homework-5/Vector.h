@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <cstddef>
 #include <iostream>
+#include <sstream>
 
 //#include "Matrix.h"
 
@@ -139,6 +140,11 @@ public:
 	}
 
 	// 输出支持
+	std::string toString() {
+		std::ostringstream oss;
+		oss << (*this);
+		return oss.str();
+	}
 	friend std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v) {
 		for (std::size_t i = 0; i < N; i++) {
 			os << v.data[i];
@@ -235,11 +241,11 @@ public:
 	T& x() { return data[0]; }
 	T& y() { return data[1]; }
 	T& z() { return data[2]; }
-    T& w() { return data[3]; }
+	T& w() { return data[3]; }
 	const T& x() const { return data[0]; }
 	const T& y() const { return data[1]; }
 	const T& z() const { return data[2]; }
-    const T& w() const { return data[3]; }
+	const T& w() const { return data[3]; }
 };
 
 using Vector2f = Vector2<float>;

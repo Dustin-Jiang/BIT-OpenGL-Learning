@@ -8,6 +8,7 @@
 #include "Planet.h"
 #include "Spaceship.h"
 #include "Spaceman.h"
+#include "Text.h"
 
 #include <stdexcept>
 #include <fstream>
@@ -34,7 +35,7 @@ public:
 	void OnUpdate(int val);
 	void OnRender();
 	void OnMouseMove(int x, int y);
-    void OnMouse(int button, int state, int x, int y);
+	void OnMouse(int button, int state, int x, int y);
 	void HandleKey();
 
 private:
@@ -46,6 +47,7 @@ private:
 
 	std::shared_ptr<Spaceship> pSpaceship;
 	std::shared_ptr<Spaceman> pSpaceman;
+	std::shared_ptr<Text> pText;
 };
 
 void Calculate(void);

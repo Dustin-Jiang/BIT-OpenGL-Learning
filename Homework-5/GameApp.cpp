@@ -26,7 +26,7 @@ void Test()
 	std::cout << "test: " << q.GetAngle() << "\t" << q.GetAxis() << std::endl;
 
 	Euler e { 30, 10, 15, true };
-    std::cout << "test: " << e.ToRotateMatrix() << "\t" << e.ToQuaternion().ToRotateMatrix() << std::endl;
+	std::cout << "test: " << e.ToRotateMatrix() << "\t" << e.ToQuaternion().ToRotateMatrix() << std::endl;
 }
 
 GameApp::GameApp() : objs{}, pCamera(std::make_shared<TransitionCamera>()), planets{},
@@ -52,14 +52,18 @@ void GameApp::Init() {
 
 	for (auto &p : planets)
 	{
-	  objs.push_back(p);
+		objs.push_back(p);
 	}
+
+	pText = std::make_shared<Text>("", Vector2f{ -0.98f, 0.95f });
+	objs.push_back(pText);
 
 	pSpaceship = std::make_shared<Spaceship>(Spaceship({ 800,0,100 }));
 	objs.push_back(pSpaceship);
 
 	pSpaceman = std::make_shared<Spaceman>(Vector3f{0, -2, -4}, Vector3f{0, 0, -1}, 2.0f, pSpaceship);
-	pSpaceship->SetSpaceman(pSpaceman);
+	pSpaceship->BindSpaceman(pSpaceman);
+	pSpaceship->BindText(pText);
 
 	pCamera->SetTarget(pSpaceman.get());
 }
@@ -118,10 +122,10 @@ void GameApp::HandleKey()
 	{
 		pCamera->StartTransition();
 	}
-    if (pKeyboard->IsKeyPress(GLUT_KEY_F10))
-    {
+	if (pKeyboard->IsKeyPress(GLUT_KEY_F10))
+	{
 		pCamera->Switch(CameraType::QuaternionType);
-    }
+	}
 }
 
 void GameApp::OnMouseMove(int x, int y)
