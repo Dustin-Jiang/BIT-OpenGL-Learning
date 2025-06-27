@@ -150,7 +150,31 @@ void Spaceman::Move(Vector3f v) {
 		if (v < from) return from;
 		return v;
 	};
+	auto hit = [&](std::string pos) {
+		pText->SetContent("Spaceman hit " + pos);
+	};
+
+	if (position.x() < -3.0) {
+		hit("left");
+	}
+	else if (position.x() > 3.0) {
+		hit("right");
+	}
+	else if (position.z() < -6.0) {
+		hit("front");
+	}
+	else if (position.z() > 6.0) {
+		hit("back");
+	}
+	else {
+		pText->Clear();
+	}
+
 	position = { clamp(position.x(), -3.0, 3.0), position.y(), clamp(position.z(), -6.0, 6.0)};
 
 	theta += 0.01f;
+}
+
+void Spaceman::BindText(std::shared_ptr<Text> text) {
+	pText = text;
 }

@@ -12,6 +12,7 @@ class Spaceman : public Bindable
 private:
     float theta = 0.0f, phi = 0.0f;
     const float MAX_ANGLE = PI / 4.0f;
+    std::shared_ptr<Text> pText;
 
 public:
     Vector3f position, front, up;
@@ -37,4 +38,6 @@ public:
     void Roll(float deg) override {};
 
     void Move(Vector3f v) override;
+
+    void BindText(std::shared_ptr<Text> text);
 };

@@ -47,7 +47,7 @@ private:
 
 	std::shared_ptr<Spaceship> pSpaceship;
 	std::shared_ptr<Spaceman> pSpaceman;
-	std::shared_ptr<Text> pText;
+	std::shared_ptr<Text> pLeftText, pRightText;
 };
 
 void Calculate(void);

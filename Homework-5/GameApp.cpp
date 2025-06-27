@@ -55,15 +55,19 @@ void GameApp::Init() {
 		objs.push_back(p);
 	}
 
-	pText = std::make_shared<Text>("", Vector2f{ -0.98f, 0.95f });
-	objs.push_back(pText);
+	pLeftText = std::make_shared<Text>("", Vector2f{ -0.98f, 0.95f });
+	objs.push_back(pLeftText);
+
+	pRightText = std::make_shared<Text>("", Vector2f{ 0.75f, 0.95f });
+	objs.push_back(pRightText);
 
 	pSpaceship = std::make_shared<Spaceship>(Spaceship({ 800,0,100 }));
 	objs.push_back(pSpaceship);
 
 	pSpaceman = std::make_shared<Spaceman>(Vector3f{0, -2, -4}, Vector3f{0, 0, -1}, 2.0f, pSpaceship);
 	pSpaceship->BindSpaceman(pSpaceman);
-	pSpaceship->BindText(pText);
+	pSpaceship->BindText(pLeftText);
+	pSpaceman->BindText(pRightText);
 
 	pCamera->SetTarget(pSpaceman.get());
 }
